@@ -1,0 +1,7 @@
+{
+  "method": "GET",
+  "url": "https://api.marketplace.umbraco.com/api/v1.0/packages/Umbraco.Community.Contentment",
+  "status": 200,
+  "contentType": "application/json",
+  "body": "{\u0022isHQ\u0022:false,\u0022isRetired\u0022:false,\u0022latestVersionNumberForProvidedUmbracoVersion\u0022:\u00226.3.3\u0022,\u0022packageId\u0022:\u0022Umbraco.Community.Contentment\u0022,\u0022packageIdForProvidedUmbracoVersion\u0022:\u0022Umbraco.Community.Contentment\u0022,\u0022versionSpecificPackageIds\u0022:[{\u0022umbracoMajorVersion\u0022:8,\u0022packageId\u0022:\u0022Our.Umbraco.Community.Contentment\u0022},{\u0022umbracoMajorVersion\u0022:9,\u0022packageId\u0022:\u0022Our.Umbraco.Community.Contentment\u0022},{\u0022umbracoMajorVersion\u0022:10,\u0022packageId\u0022:\u0022Our.Umbraco.Community.Contentment\u0022},{\u0022umbracoMajorVersion\u0022:11,\u0022packageId\u0022:\u0022Our.Umbraco.Community.Contentment\u0022},{\u0022umbracoMajorVersion\u0022:12,\u0022packageId\u0022:\u0022Our.Umbraco.Community.Contentment\u0022}]}"
+}

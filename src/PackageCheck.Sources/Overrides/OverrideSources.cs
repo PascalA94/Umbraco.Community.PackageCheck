@@ -60,7 +60,17 @@ public sealed class LocalOverrideSource : IOverrideSource
                 return new OverrideSet([], shown);
             }
             var body = await ReadCappedAsync(res.Content, cts.Token);
-            return OverrideFileParser.Parse(body, shown, OverrideOrigin.Local, Warnings());
+            try
+            {
+                return OverrideFileParser.Parse(body, shown, OverrideOrigin.Local, Warnings());
+            }
+            catch (UsageException)
+            {
+                // Design 7.3 / security review M4-S9: a remote file the user cannot fix here degrades the run; a bad
+                // local file stays a usage error (exit 2).
+                _onWarning?.Invoke($"local overrides from {shown} could not be read (not a valid overrides file); continuing without them");
+                return new OverrideSet([], shown);
+            }
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {

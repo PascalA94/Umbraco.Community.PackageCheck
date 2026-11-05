@@ -569,3 +569,45 @@ Deviations from the plan or design made during the build. Same format as "M0 dec
 - **Cost if wrong:**
   - A split UI package whose id prefix differs from the main package hides its legacy manifest (H08 missed).
   - Messages name feeds less precisely, but the NuGet.config key is still shown.
+
+### 2026-11-05: report schema v1 additions (Task 25)
+All optional, so `schemaVersion` stays 1 (design 7.6): top-level `warnings[]` (skipped paths), `sites[].warnings[]`, `sites[].target.prerelease`, `summary.transitive` (`unavailable`, `lock-file`, `msbuild` or null), `packages[].latestStable` and `latestStableClears` (ruling R25), and `override.computedVerdict`, `label`, `stale` and `replacement`. When an override applies, `verdict` is the override's and `override.computedVerdict` the table's.
+- An unresolved target (feed outage) gives `target.resolved` = the requested text and `target.tfm` null, and marks the run incomplete.
+- `summary.incomplete` is true when a site is incomplete, `--transitive` had no lock file, or any package is `unknown` with reason `source-error`. Offline and private-feed unknowns do not count (ruling R4).
+- `packages[].projects` lists project names (file name without extension), matching the console and markdown; `sites[].projects[].path` is relative to the site, with `/` separators.
+- Every free-text field (evidence detail, warnings, override summary and URLs) passes through a userinfo stripper as a last line of defence; sources already write feed URLs as scheme and host only.
+- The schema sets `additionalProperties: false` so writer and schema cannot drift; a new optional field is added to both in the same change.
+- Test-only dependency: `JsonSchema.Net 9.4.1` (published 2026-10-11, no advisories; 9.5.0 and 9.6.0 were under two weeks old).
+
+### 2026-11-05: markdown report and snapshot tests (Task 26)
+- Snapshot tests use a 40-line in-repo helper (`tests/PackageCheck.Report.Tests/Snapshot.cs`, approved `.verified.md` files) instead of Verify. Verify 33.x fails the build (SC021) until the consumer declares a sponsorship or an exemption, and that is Pascal's call, not the build's.
+- Escaping is one pass: markdown metacharacters are backslash-escaped and `& < > " '` HTML-encoded, so an entity's `#` is never escaped (ruling R17). Inside `<summary>` HTML the metacharacters become numeric entities instead, since backslashes would show verbatim there.
+- Override status is never printed as its wire value: `works`, `broken` and `partial` read "reported working", "reported not working" and "reported partly working" (ruling R5). The JSON keeps the wire value.
+- Code rules link to Umbraco17Check's NuGet page (`https://www.nuget.org/packages/Umbraco17Check`); its project URL points at a personal site, which may move.
+
+### 2026-11-05: scan command and composition (Task 28a)
+- `Umbraco.Cms` and `Umbraco.Cms.*` references (not `.Integrations.*`) are not judged: they are the thing being upgraded.
+- Sites whose NuGet.config chains give the same feeds (sources, credentials hash, source mapping, global packages folder) share one engine, so a package version used by several sites is fetched once. Each site's packages are still judged on their own, because H17 reads that site's project folders.
+- At most 8 packages are judged at once across all sites, and the one shared HTTP policy caps requests at 8.
+- The cache root is `--cache-dir`, else LocalApplicationData/umbraco-package-check. Where LocalApplicationData is empty (Linux containers without a home folder) it falls back to `XDG_CACHE_HOME`, then the temp folder, never the working directory. `--no-cache` sends NuGet's HTTP cache to a throwaway folder as well.
+- `--offline` with an `--overrides` URL is a usage error. `--version` prints the plain SemVer (no `+sha`).
+- New runtime dependencies (all over two weeks old, no advisories): System.CommandLine 2.0.13 (2026-10-13), Microsoft.Extensions.DependencyInjection 10.0.13 (2026-10-13), Spectre.Console 0.57.2 (2026-07-02). Test-only: Spectre.Console.Testing 0.57.2.
+- CLI tests replay recordings in `tests/Support/Http/cli` (public nuget.org and Marketplace, recorded 2026-11-05).
+
+### 2026-11-05: exit codes and the CI exercise (Task 28b)
+- A target that cannot be resolved because the feed did not answer is no longer a usage error. The site is reported with every package `unknown` (`source-error`, or `offline` with `--offline`), a site warning `target could not be resolved: source error`, and `target.resolved` repeating the request. With `--fail-on` set that is exit 3; an offline miss is an expected gap and does not make the run incomplete (preflight 1.34).
+- Exercise on a throwaway site with public packages (Umbraco.Cms 17.7.2, Umbraco.Community.Contentment 5.2.1, Umbraco.Community.SimpleDashboards 17.2.0, Astroboard 1.1.3), `--target 17.7.2 --fail-on suspicious`:
+  - warm run: exit 1 (Contentment upgrade, SimpleDashboards ok, Astroboard no-release by override);
+  - network blocked (`HTTPS_PROXY=http://127.0.0.1:9`, empty cache): exit 3, every package `unknown` `source-error`, `summary.incomplete: true`;
+  - `--offline` after the warm run, network still blocked: exit 1 with the same verdicts as the warm run.
+- These notes stand in for the plan's `docs/exercise.md`, since `docs/` holds only design, plan and spikes.
+
+### 2026-11-05: M4 review fixes
+- `cache clear` deletes only the tool's own files (SHA-256-named entries and their temp files) in a folder that holds the tool's marker file `.umbraco-package-check-cache`, written on first use. Any other folder is refused with exit 2 and left untouched; a symlinked cache root is refused.
+- A target that cannot be resolved makes the run incomplete unless the cause is `--offline`: a refused private feed or a feed without Umbraco.Cms now exits 3 with `--fail-on`, and the site warning names the cause.
+- `packages[].projects` holds site-relative project paths, matching `sites[].projects[].path` (design 7.6). Console and markdown show project names, or paths when two projects share a name.
+- A remote `--overrides` file that cannot be parsed is a warning, like an unreachable one; a bad local file is still exit 2.
+- stderr text is stripped of control characters and URL userinfo. Ctrl+C exits 130.
+- Markdown writes `@` as `&#64;` so a pasted report never mentions anyone; valid emoji and other astral characters are kept.
+- `explain` exits 3 only when a source failed; an offline miss or an unknown id exits 2.
+- `release.yml` publishes only a tag whose commit is on `main`.

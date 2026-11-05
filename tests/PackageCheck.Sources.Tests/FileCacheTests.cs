@@ -22,11 +22,24 @@ public sealed class FileCacheTests : IDisposable
     private static CacheKey Key(string id = "Pkg", string? version = "1.0.0") => new("versions", Feed, id, version, null);
 
     [Fact]
+    public void Write_CreatesMarker_SoClearKnowsTheFolder()
+    {
+        var cache = Cache();
+        cache.Write(Key(), new[] { "a" });
+
+        Assert.True(File.Exists(Path.Combine(_root, FileCache.MarkerFileName)));
+        Assert.True(cache.IsCacheFolder);
+    }
+
+    /// <summary>Cache files other than the marker that identifies the folder (security review M4-S1).</summary>
+    private string[] EntryFiles() => [.. Directory.GetFiles(_root).Where(f => Path.GetFileName(f) != FileCache.MarkerFileName)];
+
+    [Fact]
     public void Write_IsAtomic_TempThenRename()
     {
         var cache = Cache();
         cache.Write(Key(), new[] { "a" });
-        var files = Directory.GetFiles(_root);
+        var files = EntryFiles();
         var file = Assert.Single(files);
         Assert.EndsWith(".json", file);
         Assert.DoesNotContain(files, f => f.EndsWith(".tmp"));
@@ -40,7 +53,7 @@ public sealed class FileCacheTests : IDisposable
         var cache = Cache();
         cache.Write(Key("Umbraco.Community.Contentment"), new[] { "a" });
         Assert.True(cache.TryRead<string[]>(Key("umbraco.community.contentment"), null, out _));
-        Assert.Matches("^[0-9a-f]{64}\\.json$", Path.GetFileName(Assert.Single(Directory.GetFiles(_root))));
+        Assert.Matches("^[0-9a-f]{64}\\.json$", Path.GetFileName(Assert.Single(EntryFiles())));
     }
 
     [Fact]
@@ -48,7 +61,7 @@ public sealed class FileCacheTests : IDisposable
     {
         var cache = Cache();
         cache.Write(Key(), new[] { "a" });
-        var file = Assert.Single(Directory.GetFiles(_root));
+        var file = Assert.Single(EntryFiles());
         File.WriteAllBytes(file, [0xFF, 0x00, 0x7B, 0x22]);
         Assert.False(cache.TryRead<string[]>(Key(), null, out _));
         cache.Write(Key(), new[] { "b" });
@@ -100,7 +113,7 @@ public sealed class FileCacheTests : IDisposable
     {
         var cache = Cache();
         cache.Write(Key(), new[] { "a" });
-        var name = Path.GetFileNameWithoutExtension(Assert.Single(Directory.GetFiles(_root)));
+        var name = Path.GetFileNameWithoutExtension(Assert.Single(EntryFiles()));
         var stale = Path.Combine(_root, $"{name}.{Guid.NewGuid():N}.tmp");
         var fresh = Path.Combine(_root, $"{name}.{Guid.NewGuid():N}.tmp");
         File.WriteAllText(stale, "garbage");

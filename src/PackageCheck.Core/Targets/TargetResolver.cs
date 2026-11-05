@@ -7,7 +7,8 @@ namespace PackageCheck.Core.Targets;
 
 /// <summary>
 /// Turns <c>--target</c> into a <see cref="TargetVersion"/> (design 6.1). <c>current</c> and <c>next-major</c> need the
-/// site's version, so the caller resolves once per site (Task 28a). Every failure is a <see cref="UsageException"/> (exit 2).
+/// site's version, so the caller resolves once per site (Task 28a). Input failures are a <see cref="UsageException"/>
+/// (exit 2); a feed that does not answer is a <see cref="TargetUnavailableException"/> (Task 28b).
 /// </summary>
 public sealed class TargetResolver(IPackageMetadataSource source, IUmbracoVersionsSource versions, TimeProvider? clock = null)
 {
@@ -49,7 +50,8 @@ public sealed class TargetResolver(IPackageMetadataSource source, IUmbracoVersio
         catch (PackageSourceException e)
         {
             // Without the feed there is no patch list to pick from; an exact version needs no network (ruling R4).
-            throw new UsageException($"cannot resolve --target {requested} to an Umbraco.Cms {major}.x version ({e.Message}); pass an exact version");
+            throw new TargetUnavailableException(e.Reason,
+                $"cannot resolve --target {requested} to an Umbraco.Cms {major}.x version ({e.Message}); pass an exact version");
         }
 
         // Pulled (unlisted) versions are what NuGet's "latest" skips too; a target must be installable.

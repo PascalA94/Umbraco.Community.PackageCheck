@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -21,8 +22,18 @@ public sealed class FileCache(string root, TimeProvider clock)
     private static readonly TimeSpan StaleTmpAge = TimeSpan.FromHours(1);
     private int _cleaned;
 
-    public static string DefaultRoot { get; } =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "umbraco-package-check");
+    /// <summary>
+    /// Written into the root on first use. <c>cache clear</c> refuses a folder without it, so a mistyped
+    /// <c>--cache-dir</c> can never empty a project folder (security review M4-S1).
+    /// </summary>
+    public const string MarkerFileName = ".umbraco-package-check-cache";
+
+    // Only names this class writes: a SHA-256 entry, and its temp file while being written.
+    private static readonly Regex EntryName = new("^[0-9a-f]{64}\\.json$", RegexOptions.CultureInvariant);
+    private static readonly Regex TmpName = new("^[0-9a-f]{64}\\.[0-9a-f]{32}\\.tmp$", RegexOptions.CultureInvariant);
+
+    public bool IsCacheFolder => File.Exists(Path.Combine(root, MarkerFileName))
+                                 && new DirectoryInfo(root).LinkTarget is null;
 
     internal static JsonSerializerOptions Json { get; } = new(JsonSerializerDefaults.Web)
     {
@@ -77,7 +88,12 @@ public sealed class FileCache(string root, TimeProvider clock)
         try
         {
             Directory.CreateDirectory(root);
-            if (Interlocked.Exchange(ref _cleaned, 1) == 0) CleanStaleTmp();
+            if (Interlocked.Exchange(ref _cleaned, 1) == 0)
+            {
+                var marker = Path.Combine(root, MarkerFileName);
+                if (!File.Exists(marker)) File.WriteAllText(marker, "umbraco-package-check cache v1\n");
+                CleanStaleTmp();
+            }
             var path = PathFor(key);
             tmp = $"{path[..^".json".Length]}.{Guid.NewGuid():N}.tmp";
             File.WriteAllBytes(tmp, JsonSerializer.SerializeToUtf8Bytes(new Entry<T>(key.Normalised, clock.GetUtcNow(), value), Json));
@@ -94,17 +110,23 @@ public sealed class FileCache(string root, TimeProvider clock)
         }
     }
 
+    /// <summary>
+    /// Deletes this tool's entries and temp files, and nothing else. Throws <see cref="InvalidOperationException"/>
+    /// for a folder that is not a cache this tool created (no marker, or a symlink), leaving it untouched.
+    /// </summary>
     public void Clear()
     {
         if (!Directory.Exists(root)) return;
-        foreach (var f in Directory.EnumerateFiles(root, "*.json").Concat(Directory.EnumerateFiles(root, "*.tmp"))) TryDelete(f);
+        if (!IsCacheFolder) throw new InvalidOperationException($"{root} is not an umbraco-package-check cache folder");
+        foreach (var f in new DirectoryInfo(root).EnumerateFiles().Where(f => EntryName.IsMatch(f.Name) || TmpName.IsMatch(f.Name)))
+            TryDelete(f.FullName);
     }
 
     public CacheInfo Info()
     {
         if (!Directory.Exists(root)) return new CacheInfo(root, 0, 0);
-        var files = new DirectoryInfo(root).GetFiles("*.json");
-        return new CacheInfo(root, files.Length, files.Sum(f => f.Length));
+        var files = new DirectoryInfo(root).GetFiles("*.json").Where(f => EntryName.IsMatch(f.Name)).ToList();
+        return new CacheInfo(root, files.Count, files.Sum(f => f.Length));
     }
 
     private string PathFor(CacheKey key) =>
@@ -115,7 +137,7 @@ public sealed class FileCache(string root, TimeProvider clock)
     {
         var cutoff = clock.GetUtcNow().UtcDateTime - StaleTmpAge;
         foreach (var f in new DirectoryInfo(root).EnumerateFiles("*.tmp"))
-            if (f.LastWriteTimeUtc < cutoff) TryDelete(f.FullName);
+            if (TmpName.IsMatch(f.Name) && f.LastWriteTimeUtc < cutoff) TryDelete(f.FullName);
     }
 
     private static void TryDelete(string path)

@@ -3,6 +3,8 @@ obj/
 artifacts/
 .superpowers/
 TestResults/
+# Snapshot tests write these when output differs; only .verified.* files are committed.
+*.received.*
 .vs/
 .idea/
 *.user

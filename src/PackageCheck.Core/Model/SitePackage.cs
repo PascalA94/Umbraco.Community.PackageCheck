@@ -2,9 +2,15 @@ namespace PackageCheck.Core.Model;
 
 /// <summary>
 /// One distinct package (id, version) in a site and every project that uses it. <paramref name="Projects"/> are names
-/// for reports; <paramref name="ProjectDirectories"/> are those projects' folders, read only, for H17.
+/// for reports; <paramref name="ProjectDirectories"/> are those projects' folders, read only, for H17;
+/// <paramref name="ProjectPaths"/> are the project files' full paths, which the JSON report gives site-relative
+/// (design 7.6, review M4 F3: two projects with one file name stay two entries).
 /// </summary>
-public sealed record SitePackage(PackageRef Ref, IReadOnlyList<string> Projects, IReadOnlyList<string>? ProjectDirectories = null);
+public sealed record SitePackage(
+    PackageRef Ref,
+    IReadOnlyList<string> Projects,
+    IReadOnlyList<string>? ProjectDirectories = null,
+    IReadOnlyList<string>? ProjectPaths = null);
 
 public static class SitePackages
 {
@@ -15,14 +21,15 @@ public static class SitePackages
     /// </summary>
     public static IReadOnlyList<SitePackage> From(ScanInput input)
     {
-        var rows = new Dictionary<(string Id, string Version), (PackageRef Ref, SortedSet<string> Projects, SortedSet<string> Dirs)>(
+        var rows = new Dictionary<(string Id, string Version), (PackageRef Ref, SortedSet<string> Projects, SortedSet<string> Dirs, SortedSet<string> Paths)>(
             new KeyComparer());
         var order = new List<(string, string)>();
 
         foreach (var project in input.Projects)
         {
             var name = Path.GetFileNameWithoutExtension(project.Path);
-            var dir = Path.GetDirectoryName(Path.GetFullPath(project.Path)) ?? "";
+            var full = Path.GetFullPath(project.Path);
+            var dir = Path.GetDirectoryName(full) ?? "";
             foreach (var p in project.Packages)
             {
                 var key = (p.Id, p.Version?.ToNormalizedString() ?? $"raw:{p.VersionText}|{p.UnresolvedReason}");
@@ -30,21 +37,23 @@ public static class SitePackages
                 {
                     row.Projects.Add(name);
                     row.Dirs.Add(dir);
+                    row.Paths.Add(full);
                     // A direct reference anywhere makes the row direct: that is the stricter reading for the rules.
                     if (p.Direct && !row.Ref.Direct)
                     {
-                        rows[key] = (row.Ref with { Direct = true }, row.Projects, row.Dirs);
+                        rows[key] = (row.Ref with { Direct = true }, row.Projects, row.Dirs, row.Paths);
                     }
                 }
                 else
                 {
-                    rows[key] = (p, new SortedSet<string>(StringComparer.Ordinal) { name }, new SortedSet<string>(StringComparer.Ordinal) { dir });
+                    rows[key] = (p, new SortedSet<string>(StringComparer.Ordinal) { name }, new SortedSet<string>(StringComparer.Ordinal) { dir },
+                        new SortedSet<string>(StringComparer.Ordinal) { full });
                     order.Add(key);
                 }
             }
         }
 
-        return [.. order.Select(k => new SitePackage(rows[k].Ref, [.. rows[k].Projects], [.. rows[k].Dirs]))];
+        return [.. order.Select(k => new SitePackage(rows[k].Ref, [.. rows[k].Projects], [.. rows[k].Dirs], [.. rows[k].Paths]))];
     }
 
     private sealed class KeyComparer : IEqualityComparer<(string Id, string Version)>

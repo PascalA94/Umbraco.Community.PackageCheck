@@ -3,4 +3,14 @@
     <!-- Libraries are bundled into the tool, never published on their own (design 7.1). -->
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../PackageCheck.Core/PackageCheck.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The repo copy is the published schema (design 7.6); embedding it keeps the tool and the URL in step. -->
+    <EmbeddedResource Include="../../schema/report.schema.json" LogicalName="report.schema.json" />
+  </ItemGroup>
 </Project>

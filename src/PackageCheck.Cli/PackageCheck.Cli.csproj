@@ -9,13 +9,25 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>umbraco upgrade compatibility dotnet-tool cli</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Description>Placeholder for Umbraco Package Check, a dotnet tool that reports which NuGet packages on an Umbraco site are ready for an upgrade.</Description>
+    <PackageIcon>icon.png</PackageIcon>
+    <Description>A dotnet tool that reports which NuGet packages on an Umbraco site are ready for a target Umbraco version, with the evidence for each verdict. Reports only; never changes the site.</Description>
     <RootNamespace>PackageCheck.Cli</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../PackageCheck.Core/PackageCheck.Core.csproj" />
+    <ProjectReference Include="../PackageCheck.Inputs/PackageCheck.Inputs.csproj" />
+    <ProjectReference Include="../PackageCheck.Sources/PackageCheck.Sources.csproj" />
+    <ProjectReference Include="../PackageCheck.Inspect/PackageCheck.Inspect.csproj" />
+    <ProjectReference Include="../PackageCheck.Report/PackageCheck.Report.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)../../README.md" Pack="true" PackagePath="/" />
+    <None Include="$(MSBuildThisFileDirectory)../../assets/icon.png" Pack="true" PackagePath="/" />
+    <!-- Design 7.6: the schema ships in the package as a file next to the tool, as well as embedded in Report. -->
+    <Content Include="$(MSBuildThisFileDirectory)../../schema/report.schema.json" Link="schema/report.schema.json" CopyToOutputDirectory="PreserveNewest" Pack="false" />
   </ItemGroup>
 </Project>

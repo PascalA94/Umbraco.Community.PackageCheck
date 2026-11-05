@@ -1,0 +1,41 @@
+name: Re-record HTTP fixtures
+
+# Weekly and on demand: replays are refreshed against live nuget.org and the Marketplace, and the diff is uploaded
+# for a human to review and commit. Nothing is pushed.
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rerecord:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - name: Run the recorded-HTTP tests live
+        env:
+          PACKAGECHECK_RECORD: "1"
+        # Failures are expected when upstream data moved; the diff is the point, so it is uploaded either way.
+        run: dotnet test -c Release || echo "::warning::tests failed while re-recording; review the diff"
+      - name: Collect the diff
+        run: |
+          git add -N tests/Support/Http
+          git diff --stat -- tests/Support/Http | tee rerecord-stat.txt
+          git diff -- tests/Support/Http > rerecord.diff
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rerecord-diff
+          path: |
+            rerecord.diff
+            rerecord-stat.txt
+          retention-days: 14

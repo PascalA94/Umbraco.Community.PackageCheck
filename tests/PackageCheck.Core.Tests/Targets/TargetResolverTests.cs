@@ -1,3 +1,4 @@
+using PackageCheck.Core.Model;
 using Microsoft.Extensions.Time.Testing;
 using NuGet.Frameworks;
 using NuGet.Versioning;
@@ -157,9 +158,12 @@ public class TargetResolverTests
     [Fact]
     public async Task Offline_MajorTarget_ThrowsWithExactVersionHint()
     {
-        var e = await Assert.ThrowsAsync<UsageException>(() =>
+        // A feed that did not answer is a source failure, not a usage error (plan Task 28b, P12; preflight 1.34).
+        var e = await Assert.ThrowsAsync<TargetUnavailableException>(() =>
             Resolver(new FakeMetadataSource { Offline = true }).ResolveAsync("17", null, false, Ct));
         Assert.Contains("exact version", e.Message);
+        Assert.Equal(UnknownReason.Offline, e.Reason);
+        Assert.IsNotType<UsageException>(e, exactMatch: false);
     }
 
     [Theory]

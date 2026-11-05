@@ -1,0 +1,475 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/PascalA94/Umbraco.Community.PackageCheck/main/schema/report.schema.json",
+  "title": "Umbraco Package Check report",
+  "description": "Report written by umbraco-package-check scan --format json. Adding optional fields keeps schemaVersion 1; removing or renaming a field, or changing an enum value, bumps it. Key on verdict and check ids, not on detail text.",
+  "$defs": {
+    "verdict": {
+      "enum": [
+        "ok",
+        "upgrade",
+        "no-release",
+        "suspicious",
+        "replaced",
+        "unknown",
+        "not-umbraco"
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check",
+        "result",
+        "weight",
+        "source",
+        "detail"
+      ],
+      "properties": {
+        "check": {
+          "type": "string",
+          "minLength": 1,
+          "description": "H01-H19 for heuristics; source, inspect and similar ids for tool notes. Key on these ids, not on detail text."
+        },
+        "result": {
+          "enum": [
+            "positive",
+            "negative",
+            "info"
+          ]
+        },
+        "weight": {
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "info"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "marketplace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "url",
+        "retired",
+        "alternate"
+      ],
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "retired": {
+          "type": "boolean"
+        },
+        "alternate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "override": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "status",
+        "summary",
+        "evidence",
+        "verifiedOn",
+        "reviewBy",
+        "stale"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "works",
+            "broken",
+            "partial"
+          ]
+        },
+        "summary": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string",
+          "pattern": "^https://"
+        },
+        "verifiedOn": {
+          "type": "string",
+          "format": "date"
+        },
+        "reviewBy": {
+          "type": "string",
+          "format": "date"
+        },
+        "stale": {
+          "type": "boolean"
+        },
+        "computedVerdict": {
+          "$ref": "#/$defs/verdict"
+        },
+        "label": {
+          "enum": [
+            "override",
+            "local override"
+          ]
+        },
+        "replacement": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "current",
+        "direct",
+        "projects",
+        "verdict",
+        "confidence",
+        "reason",
+        "recommended",
+        "highestCompatible",
+        "prereleaseCompatible",
+        "evidence",
+        "marketplace",
+        "override"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "current": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "direct": {
+          "type": "boolean"
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "verdict": {
+          "$ref": "#/$defs/verdict"
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            null
+          ]
+        },
+        "reason": {
+          "enum": [
+            "offline",
+            "unresolved-property",
+            "private-feed",
+            "not-found",
+            "unsafe-archive",
+            "conflicting-evidence",
+            "source-error",
+            null
+          ]
+        },
+        "recommended": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "highestCompatible": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "prereleaseCompatible": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "latestStable": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "latestStableClears": {
+          "type": "boolean"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "marketplace": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/marketplace"
+            }
+          ]
+        },
+        "override": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/override"
+            }
+          ]
+        }
+      }
+    },
+    "site": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "target",
+        "projects",
+        "packages"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requested",
+            "resolved",
+            "tfm"
+          ],
+          "properties": {
+            "requested": {
+              "type": "string"
+            },
+            "resolved": {
+              "type": "string"
+            },
+            "tfm": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "prerelease": {
+              "type": "boolean"
+            }
+          }
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "umbracoVersion",
+              "tfms"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "umbracoVersion": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "tfms": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "packages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/package"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "tool",
+    "generatedAt",
+    "options",
+    "sites",
+    "summary"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "const": "umbraco-package-check"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "failOn",
+        "offline",
+        "transitive",
+        "inspect",
+        "prerelease"
+      ],
+      "properties": {
+        "failOn": {
+          "enum": [
+            "none",
+            "suspicious",
+            "upgrade",
+            "no-release"
+          ]
+        },
+        "offline": {
+          "type": "boolean"
+        },
+        "transitive": {
+          "type": "boolean"
+        },
+        "inspect": {
+          "type": "boolean"
+        },
+        "prerelease": {
+          "type": "boolean"
+        }
+      }
+    },
+    "sites": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/site"
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "counts",
+        "incomplete"
+      ],
+      "properties": {
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ok",
+            "upgrade",
+            "no-release",
+            "suspicious",
+            "replaced",
+            "unknown"
+          ],
+          "properties": {
+            "ok": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "upgrade": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "no-release": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "suspicious": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "replaced": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "unknown": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "incomplete": {
+          "type": "boolean"
+        },
+        "transitive": {
+          "enum": [
+            "unavailable",
+            "lock-file",
+            "msbuild",
+            null
+          ]
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

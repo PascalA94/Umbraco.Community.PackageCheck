@@ -78,3 +78,71 @@ jobs:
             echo "Vulnerable packages found" >&2
             exit 1
           fi
+
+  # Plan review P17: global.json pins SDK 10, so the tool is packed once here and installed outside the repo.
+  pack:
+    runs-on: ubuntu-latest
+    env:
+      CI_VERSION: 0.1.0-ci.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet pack src/PackageCheck.Cli -c Release -p:Version="$CI_VERSION" -o "$RUNNER_TEMP/pc/artifacts"
+      # A site outside the repo (so no repo props apply) with public packages, and a cache seeded online for the offline
+      # install check. --fail-on makes a source failure while seeding fail the job (exit 3) instead of a thin cache.
+      - name: Seed the offline scan
+        run: |
+          site="$RUNNER_TEMP/pc/site"
+          mkdir -p "$site/Web"
+          cat > "$site/Web/Web.csproj" <<'XML'
+          <Project Sdk="Microsoft.NET.Sdk.Web">
+            <PropertyGroup><TargetFramework>net10.0</TargetFramework></PropertyGroup>
+            <ItemGroup>
+              <PackageReference Include="Umbraco.Cms" Version="17.7.2" />
+              <PackageReference Include="Umbraco.Community.Contentment" Version="5.2.1" />
+              <PackageReference Include="Umbraco.Community.SimpleDashboards" Version="17.2.0" />
+            </ItemGroup>
+          </Project>
+          XML
+          dotnet run --project src/PackageCheck.Cli -c Release -- scan "$site" --target 17.7.2 --no-inspect --fail-on no-release --cache-dir "$RUNNER_TEMP/pc/cache"
+          echo "$CI_VERSION" > "$RUNNER_TEMP/pc/version.txt"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: tool-package
+          path: ${{ runner.temp }}/pc
+          include-hidden-files: true
+          retention-days: 7
+
+  install-matrix:
+    needs: pack
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk: [8.0.x, 9.0.x, 10.0.x]
+    steps:
+      # No checkout: only the one SDK is installed, and nothing from the repo (global.json) is in the way.
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          dotnet-version: ${{ matrix.sdk }}
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: tool-package
+          path: ${{ runner.temp }}/pc
+      - name: Install, print the version and scan offline
+        working-directory: ${{ runner.temp }}/pc
+        run: |
+          dotnet --list-runtimes
+          version="$(cat version.txt)"
+          dotnet tool install --tool-path ./t --add-source ./artifacts Umbraco.Community.PackageCheck --version "$version"
+          test "$(./t/umbraco-package-check --version)" = "$version"
+          # A dead proxy on the scan proves it never goes online (review M4-S11).
+          HTTPS_PROXY=http://127.0.0.1:9 HTTP_PROXY=http://127.0.0.1:9 \
+            ./t/umbraco-package-check scan ./site --offline --no-inspect --cache-dir ./cache --target 17.7.2 --format json > report.json
+          # Every package must come from the seeded cache: none may be unknown.
+          test "$(jq '[.sites[].packages[] | select(.verdict == "unknown")] | length' report.json)" = "0"
+          test "$(jq '.sites[0].packages | length' report.json)" = "2"

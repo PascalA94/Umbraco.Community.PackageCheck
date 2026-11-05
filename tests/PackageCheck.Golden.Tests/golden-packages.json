@@ -68,7 +68,7 @@
       "verdict": "ok",
       "confidence": "high"
     },
-    "expectedStatus": "proposed, Pascal to confirm",
+    "expectedStatus": "confirmed by Pascal, 2026-11-05",
     "designAc": "design 6.1/8: upgrade to 6.3.3, not 7.x. Replaced by ruling R19: computes ok"
   },
   {
@@ -90,7 +90,7 @@
       "recommended": "6.3.4",
       "latestStable": "7.2.2"
     },
-    "expectedStatus": "proposed, Pascal to confirm",
+    "expectedStatus": "confirmed by Pascal, 2026-11-05",
     "why": "G6 (lowest clearing major, highest patch, not 7.x) at the gate target; newest 5.x, net8.0 range [13.2.0, 14.0.0) excludes 17.7.2. Ruling R19 / Task 7 brief."
   },
   {
@@ -108,7 +108,7 @@
       "verdict": "ok",
       "confidence": "high"
     },
-    "expectedStatus": "proposed, Pascal to confirm",
+    "expectedStatus": "confirmed by Pascal, 2026-11-05",
     "designAc": "design 6.1/9: not suspicious because of its manifests"
   },
   {
@@ -126,7 +126,7 @@
       "verdict": "ok",
       "confidence": "low"
     },
-    "expectedStatus": "proposed, Pascal to confirm"
+    "expectedStatus": "confirmed by Pascal, 2026-11-05"
   },
   {
     "id": "Umbraco.Community.Contentment",
@@ -147,7 +147,7 @@
       "recommended": "6.3.4",
       "latestStable": "7.2.2"
     },
-    "expectedStatus": "proposed, Pascal to confirm"
+    "expectedStatus": "confirmed by Pascal, 2026-11-05"
   },
   {
     "id": "Umbraco.Community.Contentment",
@@ -164,7 +164,7 @@
       "verdict": "ok",
       "confidence": "high"
     },
-    "expectedStatus": "proposed, Pascal to confirm"
+    "expectedStatus": "confirmed by Pascal, 2026-11-05"
   },
   {
     "id": "Umbraco.Community.Contentment",
@@ -181,7 +181,7 @@
       "verdict": "no-release",
       "confidence": "high"
     },
-    "expectedStatus": "proposed, Pascal to confirm"
+    "expectedStatus": "confirmed by Pascal, 2026-11-05"
   },
   {
     "id": "Our.Umbraco.Community.Contentment",
@@ -199,7 +199,7 @@
       "confidence": "high",
       "recommended": "Umbraco.Community.Contentment"
     },
-    "expectedStatus": "proposed, Pascal to confirm; pending R30 (rename leg) with R27. Until R30 is built the engine computes no-release.",
+    "expectedStatus": "confirmed by Pascal, 2026-11-05; pending R30 (rename leg) with R27. Until R30 is built the engine computes no-release.",
     "why": "Design 9 lists the Our.Umbraco.Community.Contentment rename. The old id is not on the Marketplace (404) and is not deprecated on NuGet, so no H13/H14 fires."
   },
   {
@@ -221,7 +221,7 @@
       "recommended": "17.0.5",
       "latestStable": "18.0.0"
     },
-    "expectedStatus": "proposed, Pascal to confirm"
+    "expectedStatus": "confirmed by Pascal, 2026-11-05"
   },
   {
     "id": "Skybrud.Umbraco.Redirects",
@@ -244,7 +244,7 @@
       "recommended": "17.1.0-beta003",
       "latestStable": "18.0.0"
     },
-    "expectedStatus": "proposed, Pascal to confirm"
+    "expectedStatus": "confirmed by Pascal, 2026-11-05"
   },
   {
     "id": "astroboard",
@@ -263,7 +263,7 @@
       "verdict": "suspicious",
       "confidence": "medium"
     },
-    "expectedStatus": "proposed, Pascal to confirm"
+    "expectedStatus": "confirmed by Pascal, 2026-11-05"
   },
   {
     "id": "Plumber.Workflow",
@@ -282,7 +282,7 @@
       "confidence": "high",
       "recommended": "Umbraco.Workflow"
     },
-    "expectedStatus": "proposed, Pascal to confirm",
+    "expectedStatus": "confirmed by Pascal, 2026-11-05",
     "why": "Deprecated on NuGet (Other, Legacy) with alternate Umbraco.Workflow; the former name of a package already in the goldens. Lands on row 9, so replaced under either reading of the H13/H14 row rule."
   },
   {
@@ -302,7 +302,7 @@
       "confidence": "high",
       "recommended": "Enterspeed.Source.UmbracoCms"
     },
-    "expectedStatus": "proposed, Pascal to confirm",
+    "expectedStatus": "confirmed by Pascal, 2026-11-05",
     "why": "Retired on the Marketplace with alternate Enterspeed.Source.UmbracoCms (also NuGet-deprecated). Lands on row 4, so replaced under either reading of the H13/H14 row rule."
   },
   {
@@ -322,7 +322,7 @@
       "confidence": "high",
       "prereleaseCompatible": "17.0.0-beta001"
     },
-    "expectedStatus": "proposed, Pascal to confirm",
+    "expectedStatus": "confirmed by Pascal, 2026-11-05",
     "why": "Ruling R2: only a prerelease clears. 13.0.1 is the newest stable ([13.0.0, 13.999.0)); the only 17.x is 17.0.0-beta001 ([17.0.0, 17.999.0))."
   },
   {
@@ -344,7 +344,7 @@
       "confidence": "high",
       "recommended": "17.0.0-beta001"
     },
-    "expectedStatus": "proposed, Pascal to confirm",
+    "expectedStatus": "confirmed by Pascal, 2026-11-05",
     "why": "Ruling R2: only a prerelease clears. 13.0.1 is the newest stable ([13.0.0, 13.999.0)); the only 17.x is 17.0.0-beta001 ([17.0.0, 17.999.0))."
   },
   {
@@ -368,7 +368,7 @@
       "highestCompatible": "7.2.2",
       "latestStable": "7.2.2"
     },
-    "expectedStatus": "proposed, Pascal to confirm",
+    "expectedStatus": "confirmed by Pascal, 2026-11-05",
     "why": "G6 where two majors clear: Contentment 6.1.x declares [17.0.0, 19.0.0) and 7.x [18.0.0, 19.0.0), so the lowest-major rule picks 6.1.4 over 7.2.2."
   },
   {

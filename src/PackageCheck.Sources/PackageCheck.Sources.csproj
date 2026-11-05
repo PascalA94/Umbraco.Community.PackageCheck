@@ -8,5 +8,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NuGet.Protocol" />
+    <!-- Override files are YAML (design 7.8); JSON is read by the same parser, YAML being a superset. -->
+    <PackageReference Include="YamlDotNet" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The bundled data snapshot (design 7.8); one copy in data/ at the repo root, which M5 moves to umbraco-package-compat. -->
+    <EmbeddedResource Include="../../data/umbraco-versions.json" LogicalName="PackageCheck.Data.umbraco-versions.json" />
+    <EmbeddedResource Include="../../data/overrides.seed.json" LogicalName="PackageCheck.Data.overrides.seed.json" />
   </ItemGroup>
 </Project>

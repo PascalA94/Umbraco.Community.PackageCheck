@@ -336,41 +336,45 @@ Each line shows the verdict, then the confidence, the truth-table row that match
 
 **Findings the later tasks must absorb**
 1. Plan Task 17's test `Contentment621_Target1772_UpgradeTo633_Not7` expects `HighestCompatible "7.2.1"` at 17.7.2. On the data no 7.x clears 17.7.2, so `HighestCompatible` is null there. The gate prints "highest overall" as the highest stable version and says when it does not support the target. Task 17 should test the "not 7.x" rule at 18.x with the snapshot (6.1.4 over 7.2.2).
-2. The table has two gaps where no row matches: an open range from 14 or later with a high negative (rows 3 and 4 need a bounded range or H03), and an open range from below 14 when the target is 13 or lower (rows 8 and 9 need a 14+ floor or a 14+ target). No golden reaches either. Ruling R28 closes them (widened rows 4 and 8, a missing floor counts as below 14, and an `unknown` fallback that Task 17 proves unreachable); see Truth table changes, below. Proposed, Pascal to confirm.
-3. "H13 and H14 turn any row into `replaced` unless row 1 or 5-8 says the current version is fine" (design 7.4) can be read two ways for row 1. Ruling R27 takes the design's reading: row 1 is exempt only when it resolves to `upgrade` to a non-deprecated, non-retired version of the same id, so a row-1 `no-release` with a high H13/H14 becomes `replaced`. The M0 code applies it. Both picks land on rows 9 and 4, so neither reading changes a golden. Proposed, Pascal to confirm.
-4. Dependency inspection only follows dependencies that have their own path to `Umbraco.Cms.*`. `Plumber.Backoffice 10.1.2` has an empty dependency group but ships `Content/App_Plugins/Plumber/...`, so it is skipped and Plumber.Workflow is reported as server-only. That does not change its verdict, because H08 counts the package's own files only (R23), but Task 21 should also inspect direct dependencies that ship client assets when it decides `IsServerOnly` (ruling R29, proposed; not built in the M0 spike). Server-only also never discards H07/H09 (R31, applied in the M0 code).
+2. The table has two gaps where no row matches: an open range from 14 or later with a high negative (rows 3 and 4 need a bounded range or H03), and an open range from below 14 when the target is 13 or lower (rows 8 and 9 need a 14+ floor or a 14+ target). No golden reaches either. Ruling R28 closes them (widened rows 4 and 8, a missing floor counts as below 14, and an `unknown` fallback that Task 17 proves unreachable); see Truth table changes, below. Confirmed by Pascal, 2026-11-05.
+3. "H13 and H14 turn any row into `replaced` unless row 1 or 5-8 says the current version is fine" (design 7.4) can be read two ways for row 1. Ruling R27 takes the design's reading: row 1 is exempt only when it resolves to `upgrade` to a non-deprecated, non-retired version of the same id, so a row-1 `no-release` with a high H13/H14 becomes `replaced`. The M0 code applies it. Both picks land on rows 9 and 4, so neither reading changes a golden. Confirmed by Pascal, 2026-11-05.
+4. Dependency inspection only follows dependencies that have their own path to `Umbraco.Cms.*`. `Plumber.Backoffice 10.1.2` has an empty dependency group but ships `Content/App_Plugins/Plumber/...`, so it is skipped and Plumber.Workflow is reported as server-only. That does not change its verdict, because H08 counts the package's own files only (R23), but Task 21 should also inspect direct dependencies that ship client assets when it decides `IsServerOnly` (ruling R29, confirmed by Pascal 2026-11-05; not built in the M0 spike). Server-only also never discards H07/H09 (R31, applied in the M0 code).
 5. The Marketplace's "latest for target" lags NuGet: it reports Contentment 6.3.3 at 17.7.2 while 6.3.4 is listed. H12 stays info only.
 6. Under R1, H06 fails for every net8.0-only package at 17 (astroboard, Crumpled.RobotsTxt, MediaWiz.Forums, Skybrud 13.x). It only changes a verdict in row 9.
 
 ## Decisions in place of the Fri 6 Nov review
 
-Plan Task 7 Step 3 booked a results review with Pascal on Fri 6 Nov 2026. Pascal was away for this build and asked for the review to be replaced. The controller decided GO/NO-GO from the evidence above, on 2026-11-03. Every item below is **proposed, Pascal to confirm**. Tasks 17 onwards proceed on these values, and if Pascal changes one, the matching Task 17 or Task 24 test changes with it. Rationale, evidence and the cost of being wrong for each are in "M0 decisions" below; row and rule changes are in "Truth table changes" below.
+Plan Task 7 Step 3 booked a results review with Pascal on Fri 6 Nov 2026. Pascal was away for this build and asked for the review to be replaced. The controller decided GO/NO-GO from the evidence above, on 2026-11-03. Every item below is **confirmed by Pascal, 2026-11-05**. Tasks 17 onwards proceed on these values, and if Pascal changes one, the matching Task 17 or Task 24 test changes with it. Rationale, evidence and the cost of being wrong for each are in "M0 decisions" below; row and rule changes are in "Truth table changes" below.
 
 | Item | Decision | Status |
 |---|---|---|
-| M0 | GO. The gate prints 5 of 5 lines as expected, with the Contentment AC amended by R19 | proposed, Pascal to confirm |
-| S1 | GO on NuGet.Protocol | proposed, Pascal to confirm |
-| S1b | NO-GO; fallback taken: credentials from NuGet.config `packageSourceCredentials` and environment variables only | proposed, Pascal to confirm |
-| S2 | GO; patterns as in R21 | proposed, Pascal to confirm |
-| S3 | GO with the tightened H09 (R23), weight high | proposed, Pascal to confirm |
-| S4 | GO on Microsoft.VisualStudio.SolutionPersistence | proposed, Pascal to confirm |
-| S5 | NO-GO (tools are not listed). M5 done-when becomes "on NuGet; Marketplace listing requested from HQ"; `umbraco-marketplace.json` dropped; `umbraco-marketplace` tag kept | proposed, Pascal to confirm |
+| M0 | GO. The gate prints 5 of 5 lines as expected, with the Contentment AC amended by R19 | confirmed by Pascal, 2026-11-05 |
+| S1 | GO on NuGet.Protocol | confirmed by Pascal, 2026-11-05 |
+| S1b | NO-GO; fallback taken: credentials from NuGet.config `packageSourceCredentials` and environment variables only | confirmed by Pascal, 2026-11-05 |
+| S2 | GO; patterns as in R21 | confirmed by Pascal, 2026-11-05 |
+| S3 | GO with the tightened H09 (R23), weight high | confirmed by Pascal, 2026-11-05 |
+| S4 | GO on Microsoft.VisualStudio.SolutionPersistence | confirmed by Pascal, 2026-11-05 |
+| S5 | NO-GO (tools are not listed). M5 done-when becomes "on NuGet; Marketplace listing requested from HQ"; `umbraco-marketplace.json` dropped; `umbraco-marketplace` tag kept | confirmed by Pascal, 2026-11-05 |
 | S6 | Informational; no rival inspects nupkgs | no decision needed |
-| Truth table | No golden forced a row change. R28 widens rows 4 and 8 to close three gaps; R27, R31 and R32 settle the rules below the table. See "Truth table changes" below | proposed, Pascal to confirm |
-| Step 2 goldens | As printed above and recorded in `tests/PackageCheck.Golden.Tests/golden-packages.json` (`expected`, `status`) | proposed, Pascal to confirm |
-| Picks | NuGet-deprecated: Plumber.Workflow 10.1.2. Marketplace-retired: Enterspeed.Source.UmbracoCms.V10 3.2.0. H15: Skybrud.Umbraco.Redirects.Import 13.0.1. Skybrud current version: 13.0.9 | proposed, Pascal to confirm |
-| Open questions | H13/H14 on row 1 (proposed: R27); the table gaps (proposed: R28); whether the rename should point at the new id (proposed: R30); whether Contentment 6.1.x's `[17.0.0, 19.0.0)` range should be trusted at 18 (R25 flag) | for Pascal |
+| Truth table | No golden forced a row change. R28 widens rows 4 and 8 to close three gaps; R27, R31 and R32 settle the rules below the table. See "Truth table changes" below | confirmed by Pascal, 2026-11-05 |
+| Step 2 goldens | As printed above and recorded in `tests/PackageCheck.Golden.Tests/golden-packages.json` (`expected`, `status`) | confirmed by Pascal, 2026-11-05 |
+| Picks | NuGet-deprecated: Plumber.Workflow 10.1.2. Marketplace-retired: Enterspeed.Source.UmbracoCms.V10 3.2.0. H15: Skybrud.Umbraco.Redirects.Import 13.0.1. Skybrud current version: 13.0.9 | confirmed by Pascal, 2026-11-05 |
+| Open questions | H13/H14 on row 1: R27. Table gaps: R28. Rename points at the new id: R30, carried by seed overrides. Contentment 6.1.x at 18: keep the rule, no override without evidence (R25) | confirmed by Pascal, 2026-11-05 |
 
-## M0 decisions (proposed, Pascal to confirm)
+**Pascal's confirmation (Pascal, 2026-11-05).** Pascal accepted every recommendation, so every item above and below marked "confirmed by Pascal, 2026-11-05" is final, replacing the Fri 6 Nov review (plan Task 7 Step 3). Two follow-ups were settled at the same time:
+- **R30 (rename leg):** built through the seed overrides, because the Marketplace API has no lookup from an old id to its new one.
+- **R25 (Contentment 6.1.x at 18.3.0):** the selection rule stays as it is and no override is added without evidence that 6.1.x fails on 18. The `Contentment521_Target1830_PicksLowestClearingMajor` test documents what the rule does, not that 6.1.4 works on 18. If a failure is reported, add an override ("reported not working") linking the evidence.
 
-One entry per decision, newest last. Each entry says what was decided, the evidence, what it costs if it is wrong, and its status. Pascal was away for the M0 build (from 2026-11-03), so anything that changes the design or a milestone is **proposed, Pascal to confirm**. The design (`docs/design.md`) stays verbatim; corrections to it are recorded here. (This section was `docs/decisions.md` until 2026-11-05; it moved here because `docs/` holds only design, plan and spikes.)
+## M0 decisions (confirmed by Pascal, 2026-11-05)
+
+One entry per decision, newest last. Each entry says what was decided, the evidence, what it costs if it is wrong, and its status. Pascal was away for the M0 build (from 2026-11-03), so anything that changes the design or a milestone is **confirmed by Pascal, 2026-11-05**. The design (`docs/design.md`) stays verbatim; corrections to it are recorded here. (This section was `docs/decisions.md` until 2026-11-05; it moved here because `docs/` holds only design, plan and spikes.)
 
 ### 2026-11-03: S1b, credentials from NuGet.config and environment variables only
 
 - **Decided:** 0.1 does not call NuGet's credential-provider setup (`DefaultCredentialServiceUtility.SetupDefaultCredentialService`). Credentials come only from `NuGet.config` `packageSourceCredentials`, including `%ENV%` references. A feed that answers 401 or 403 without usable credentials gives reason `private-feed`. The README says so, and CI users pass credentials the same way.
 - **Evidence:** spike S1b could not run. It needs a real private feed behind a credential provider (for example Azure Artifacts), and none was available to this unattended build. Plan Task 2b pre-approves this fallback for a failed or unrun S1b. See S1b.
 - **Cost if wrong:** teams whose private feed only works through a credential provider see `unknown` / `private-feed` for those packages, until they put credentials in `NuGet.config` or environment variables. Supporting providers later means re-running S1b Steps 1 to 3 against a real feed (record only the feed host) and adding the provider call in Task 12's `FeedSettings`.
-- **Status:** proposed, Pascal to confirm.
+- **Status:** confirmed by Pascal, 2026-11-05.
 
 ### 2026-11-03: S3 GO, H09 tightened to "implements IPackageManifestReader", weight high
 
@@ -378,21 +382,21 @@ One entry per decision, newest last. Each entry says what was decided, the evide
 - **Evidence:** S3 scanned SimpleDashboards and a 12-package control set without loading any assembly. Every H09 hit was a type implementing `IPackageManifestReader`: SimpleDashboards' own `PackageManifestReader`, Contentment's `ContentmentPackageManifestReader`, Skybrud's `RedirectsPackageManifestReader` and three uSync readers. That interface is Umbraco's v14+ way to register a backoffice manifest from C# instead of shipping `umbraco-package.json`. The plan's working definition ("ships `umbraco-package.json`") graded SimpleDashboards itself, the design's H09 showcase, as not working, so two "false positives" (Contentment 6.3.3, Skybrud 17.0.5) were artefacts of that definition. The `PackageManifest` name also exists as the v10-13 model in `Umbraco.Cms.Core.Manifest`, so matching it would invite real false positives. The M0 gate run shows the tightened rule giving the design's SimpleDashboards AC (`ok`, high, via H09).
 - **Circularity, stated plainly:** "zero false positives" holds by construction, not by measurement. Once the definition of a working package accepts "implements `IPackageManifestReader`", H09 cannot disagree with it. No package in the set was run in an Umbraco 17 site. What the evidence does show is that H09 did not fire on the genuinely legacy or front-end-only packages (astroboard, MediaWiz.Forums). A reader that is implemented but never registered would still pass; that limitation is documented, not guarded, in 0.1.
 - **Cost if wrong:** H09 drops to medium. Truth-table rows 5 and 6 then need H07 or H16, so SimpleDashboards becomes `ok` medium (a design AC change), Contentment 6.x becomes `ok` medium, and Task 21's weight and one golden change.
-- **Status:** proposed, Pascal to confirm.
+- **Status:** confirmed by Pascal, 2026-11-05.
 
 ### 2026-11-03: S5 NO-GO, Marketplace listing requested from HQ
 
 - **Decided:** M5's done-when changes from "on NuGet and listed on the Marketplace" to "on NuGet; Marketplace listing requested from HQ". Task 33 drops `umbraco-marketplace.json`. The `umbraco-marketplace` NuGet tag stays, because it is harmless and lets HQ list the tool if they decide to allow tools. Task 36 checks for a listing at +24 h and +48 h and, if absent, Pascal asks HQ. No fake Umbraco dependency is added to get listed.
 - **Evidence:** the Marketplace has 0 `Tool` listings (991 Package, 54 Integration, 7 Template). Its docs say a package without an `Umbraco.Cms.*` or `Umbraco.Commerce.*` dependency "will not be listed". The JSON schema's `PackageType` only allows `Package` or `Integration`. The one tagged DotnetTool found on NuGet (`PackageScriptWriter.Cli`) is not listed. See S5.
 - **Cost if wrong:** if tools can be listed after all, the JSON file is re-added at the repo root (never in the nupkg) with the fields recorded in S5. That is one file.
-- **Status:** proposed, Pascal to confirm. This changes a milestone outcome.
+- **Status:** confirmed by Pascal, 2026-11-05. This changes a milestone outcome.
 
 ### 2026-11-03: Contentment AC substitution (ruling R19)
 
 - **Decided:** the design AC "Given Contentment 6.2.1 and `--target 17.7.2`, then the verdict is `upgrade` to 6.3.3, not 7.x" is recorded as `Umbraco.Community.Contentment 6.2.1 -> ok` (high, row 5, own H09). The AC's intent, G6 (lowest clearing major, highest patch in it, not 7.x), is carried by `Umbraco.Community.Contentment 5.2.1 -> upgrade 6.3.4` at 17.7.2, and tested with two clearing majors by `Umbraco.Community.Contentment 5.2.1 @ 18.3.0 -> upgrade 6.1.4 (highest overall 7.2.2)`. Ruling R19 named Contentment 4.7.0 for G6; the Task 7 brief asked for the newest 5.x, which is a direct dependency on `Umbraco.Cms.*` and so tests G6 without the depth-3 walk. 4.7.0 is kept as its own golden (`upgrade 6.3.4`).
 - **Evidence:** 6.2.1's nuspec has a net10.0 group with `Umbraco.Cms.Core`, `Umbraco.Cms.Web.Website` and `Umbraco.Cms.Api.Management` at `[17.0.0, 18.0.0)`, which allows 17.7.2. The AC would only hold for a net9.0 target, whose group is `[16.0.0, 17.0.0)`. Under the design's own table that is row 7 on metadata and row 5 with H09; no row change makes it `upgrade` without breaking the other goldens. 7.x declares `[18.0.0, 19.0.0)`, so at 17.7.2 no 7.x clears and "not 7.x" is not exercised; at 18.3.0, 6.1.x (`[17.0.0, 19.0.0)`) and 7.x both clear, and the gate picks 6.1.4. See S1 and the M0 gate.
 - **Cost if wrong:** one golden expectation and its Task 24 test. If Pascal wants a literal "upgrade" line at 17.7.2 from 6.x, there is none on today's feed.
-- **Status:** proposed, Pascal to confirm. This changes one of the four design ACs.
+- **Status:** confirmed by Pascal, 2026-11-05. This changes one of the four design ACs.
 
 ### 2026-11-03: goldens run on recorded snapshots, never live feeds (ruling R20)
 
@@ -400,7 +404,7 @@ One entry per decision, newest last. Each entry says what was decided, the evide
 - **Evidence:** the live feed moved after the design was written (Contentment 6.3.4, Skybrud 17.0.x stable, Contentment 7.x for Umbraco 18). Three M0 runs (two warm, one with a cold nupkg cache) printed byte-identical output. A request outside the snapshot fails with exit 3 instead of reaching the network.
 - **Recorded Marketplace bodies (ruling R33):** only the fields the engine reads are kept (ids, retirement, alternate, HQ flag, version fields). `readMeContent`, `description` and other author-written free text are stripped before commit, by the recorder and, for the 2026-11-03 snapshot, by a one-off pass over the 10 recorded bodies (124 KB down to 6 KB). The verdicts did not change.
 - **Cost if wrong:** if Pascal wants live expectations, every golden becomes flaky as packages ship. If he wants literally 6.3.3, the snapshot must exclude 6.3.4, which means editing recorded data by hand.
-- **Status:** proposed, Pascal to confirm.
+- **Status:** confirmed by Pascal, 2026-11-05.
 
 ### 2026-11-03: corrections to the design text (ruling R24)
 
@@ -410,14 +414,14 @@ One entry per decision, newest last. Each entry says what was decided, the evide
 - **H09 (design 7.4):** "SimpleDashboards uses `jcdcdev.Umbraco.Core` [verified]". The H09 hit is in `Umbraco.Community.SimpleDashboards` itself (`Umbraco.Community.SimpleDashboards.Core.PackageManifestReader`); `jcdcdev.Umbraco.Core 17.1.0` has none (S3 Step 1).
 - **Contentment (design 6.1 AC, 8, 9):** "Contentment 6.2.1 ... `upgrade` to 6.3.3" at 17.7.2. 6.2.1 allows 17.7.2 (`[17.0.0, 18.0.0)` in its net10.0 group). See the R19 decision above.
 - **Skybrud (design 6.1 AC, 9):** "Skybrud Redirects with only a `17.1.0-beta` supporting the target". `Skybrud.Umbraco.Redirects 17.0.5` is stable and allows 17.7.2 (`[17.0.0, 17.999.0)`), and the beta is `17.1.0-beta003`. The prerelease-only case is proved with a different pair (below).
-- **Status:** recorded corrections; the substance of each is proposed, Pascal to confirm.
+- **Status:** recorded corrections; the substance of each is confirmed by Pascal, 2026-11-05.
 
 ### 2026-11-03: M0 gate GO
 
-- **Decided:** M0 is done. `dotnet run --project spikes/M0-golden -- --target 17.7.2` prints computed verdicts with no overrides, and the gate check passes 5 of 5: astroboard `suspicious`, SimpleDashboards `ok` (high, H09), Workflow `ok` (H07 in `Umbraco.Workflow.StaticAssets`), Contentment 6.2.1 `ok` (R19), Contentment 5.2.1 `upgrade 6.3.4` with 7.2.2 as the highest overall (G6). No golden forced a truth-table row change; ruling R28 widens rows 4 and 8 to close three gaps no golden reaches (see "Truth table changes" below, proposed).
+- **Decided:** M0 is done. `dotnet run --project spikes/M0-golden -- --target 17.7.2` prints computed verdicts with no overrides, and the gate check passes 5 of 5: astroboard `suspicious`, SimpleDashboards `ok` (high, H09), Workflow `ok` (H07 in `Umbraco.Workflow.StaticAssets`), Contentment 6.2.1 `ok` (R19), Contentment 5.2.1 `upgrade 6.3.4` with 7.2.2 as the highest overall (G6). No golden forced a truth-table row change; ruling R28 widens rows 4 and 8 to close three gaps no golden reaches (see "Truth table changes" below, confirmed by Pascal 2026-11-05).
 - **Evidence:** the output in the M0 gate section above. No golden needed the table bent.
-- **Cost if wrong:** Tasks 17 onwards start on proposed expectations; a change by Pascal changes the matching Task 17 or Task 24 test.
-- **Status:** proposed, Pascal to confirm (the controller decided GO from evidence in place of the 6 Nov review).
+- **Cost if wrong:** Tasks 17 onwards start on these expectations; a change by Pascal changes the matching Task 17 or Task 24 test.
+- **Status:** confirmed by Pascal, 2026-11-05 (the controller decided GO from evidence in place of the 6 Nov review).
 
 ### 2026-11-03: proposed golden verdicts for the Step 2 packages
 
@@ -426,40 +430,40 @@ All at target 17.7.2, computed, no overrides, from the recorded snapshot. Record
 - **MediaWiz.Forums 14.0.0 -> `ok`, low (row 8).**
   - Evidence: one net8.0 group with `Umbraco.Cms.*` at `>= 14.0.0` (open, floor at 14, so no H03). No `umbraco-package.json`, no `package.manifest`, no H09. 3 JS files under `staticwebassets/` with neither manifest file, which is indeterminate under R21, so H08 does not fire. H06 fails (lib is net8.0 only) but only matters in row 9. It is also deprecated on NuGet (Legacy) with no alternate: an info note, because H14 needs an alternate to name.
   - Cost if wrong: one golden expectation. If Pascal knows it fails on 17, that is an override (H16), not a table change.
-  - Status: proposed, Pascal to confirm.
+  - Status: confirmed by Pascal, 2026-11-05.
 - **Our.Umbraco.Community.Contentment 4.7.0 (the rename) -> expected `replaced by Umbraco.Community.Contentment`, high; the M0 engine computes `no-release`, high (row 1).** The expectation depends on R30 (rename leg) and R27 (row-1 `no-release` with high H13 becomes `replaced`); see those entries. Until R30 is built the computed and expected values differ, which `golden-packages.json` records in separate `computed` and `expected` fields.
   - Evidence: the metapackage depends on `Our.Umbraco.Community.Contentment.Core [4.7.0, )`, whose net8.0 group declares `Umbraco.Cms.Web.Website` and `Umbraco.Cms.Web.BackOffice` at `[13.0.0, 14.0.0)`. No newer version exists under the old id. The old id returns 404 from the Marketplace and is not deprecated on NuGet, so neither H13 nor H14 fires and the verdict does not name `Umbraco.Community.Contentment`. The Marketplace entry for the new id does list the old id under `versionSpecificPackageIds` (Umbraco 8 to 12), so a reverse lookup could find the rename. 0.1 has no such lookup.
   - Cost if wrong: if Pascal prefers `no-release` for a rename, R30 is dropped and this golden reverts to the computed value.
-  - Status: proposed, Pascal to confirm.
+  - Status: confirmed by Pascal, 2026-11-05.
 - **NuGet-deprecated pick: Plumber.Workflow 10.1.2 -> `replaced by Umbraco.Workflow`, high (row 9).**
   - Why this one: it is deprecated on NuGet (reasons Other, Legacy; message "Use the latest Umbraco.Workflow 10.x release.") with alternate `Umbraco.Workflow`, the package already in the goldens. Sites that installed Workflow under its earlier name have exactly this upgrade path. Its range `Umbraco.Cms.Web.Website >= 10.2.1` is open from below 14, so it lands on row 9 (H03, and H06 fails: net6.0 only). Row 9 is outside rows 1 and 5-8, so H14 gives `replaced` under either reading of the H13/H14 rule (see the next entry). Picked from a scan of the top 1,000 "umbraco" packages on NuGet for deprecation metadata.
   - Cost if wrong: one golden and its hash entry.
-  - Status: proposed, Pascal to confirm.
+  - Status: confirmed by Pascal, 2026-11-05.
 - **Marketplace-retired pick: Enterspeed.Source.UmbracoCms.V10 3.2.0 -> `replaced by Enterspeed.Source.UmbracoCms`, high (row 4).**
   - Why this one: the Marketplace lists 9 retired packages (`IncludeRetired=true&RetiredOnly=true`). This one has an alternate that exists in the catalogue, a real retirement reason ("no longer maintained ... use our new package which works across multiple Umbraco versions") and an open range `>= 10.1.0` that lands on row 4 (H03 with H05 for `Umbraco.Cms.Web.BackOffice` and H08 for its own legacy `package.manifest`). Row 4 gives `replaced` under either reading of the H13/H14 rule. Every one of the 9 retired packages is also deprecated on NuGet, so H13 cannot be isolated from H14 with live data; both fire here and name the same alternate.
   - Cost if wrong: one golden and its hash entry.
-  - Status: proposed, Pascal to confirm.
+  - Status: confirmed by Pascal, 2026-11-05.
 - **H15 pick (ruling R2): Skybrud.Umbraco.Redirects.Import 13.0.1 -> `no-release` naming prerelease `17.0.0-beta001`; with `--prerelease`, `upgrade 17.0.0-beta001`.**
   - Why this one: 13.0.1 is the newest stable and declares `[13.0.0, 13.999.0)`. The only 17.x is `17.0.0-beta001`, which declares `[17.0.0, 17.999.0)`, so only a prerelease clears 17.7.2. It is the same author and shape as the design's Skybrud AC, which no longer holds for Skybrud Redirects itself. Found by scanning the top 1,000 "umbraco" packages for a major with prereleases only. uSync 18.3.0 at 19.0.0-beta1 was tried first and rejected: it reaches `Umbraco.Cms.*` through `uSync.Core`'s open range `>= 18.1.0`, so it computes `ok`.
   - Cost if wrong: two goldens. When a stable 17.x ships, re-recording turns this into `upgrade`, which is why it runs on the snapshot.
-  - Status: proposed, Pascal to confirm.
-- **Skybrud.Umbraco.Redirects 13.0.9 -> `upgrade 17.0.5`; with `--prerelease`, `upgrade 17.1.0-beta003`** (R2: recorded as computed). 13.0.9 is the newest 13.x, the version a v13 site upgrading to 17 would hold. The backtest list (design 9) shows the upgrade guide chose 17.0.5. Status: proposed, Pascal to confirm.
-- **astroboard 1.1.3 `--no-inspect` -> `suspicious`, medium (row 4, not row 9).** Plan Task 7 labels this golden "truth table row 9". H05 (depends on `Umbraco.Cms.Web.BackOffice`) is metadata evidence, so it still fires with `--no-inspect`, and row 4 matches before row 9. Without H05 it would be row 9, `suspicious` low (H03 plus H06 failing under R1). Ruling R26 settles how this sits next to plan Task 21: its `NoInspect_AstroboardShape_IsRow9` is a synthetic shape without the BackOffice dependency, and the plan's expectation for it (`Ok Low`) conflicts with R1. Under R26 that test expects `Suspicious Low` (H03 plus H06 failing from the nuspec groups), and a twin with a net10.0 group expects `Ok Low`. So Task 21's test changes; this golden stays row 4, `suspicious` medium. Status: proposed, Pascal to confirm.
-- **The rest** (Crumpled.RobotsTxt 3.1.1 `ok` high row 6; Contentment 4.7.0 `upgrade 6.3.4`; Contentment 6.3.3 `ok` high row 5; Contentment 7.2.1 `no-release` high) are listed with their evidence in the M0 gate section above. Status: proposed, Pascal to confirm.
+  - Status: confirmed by Pascal, 2026-11-05.
+- **Skybrud.Umbraco.Redirects 13.0.9 -> `upgrade 17.0.5`; with `--prerelease`, `upgrade 17.1.0-beta003`** (R2: recorded as computed). 13.0.9 is the newest 13.x, the version a v13 site upgrading to 17 would hold. The backtest list (design 9) shows the upgrade guide chose 17.0.5. Status: confirmed by Pascal, 2026-11-05.
+- **astroboard 1.1.3 `--no-inspect` -> `suspicious`, medium (row 4, not row 9).** Plan Task 7 labels this golden "truth table row 9". H05 (depends on `Umbraco.Cms.Web.BackOffice`) is metadata evidence, so it still fires with `--no-inspect`, and row 4 matches before row 9. Without H05 it would be row 9, `suspicious` low (H03 plus H06 failing under R1). Ruling R26 settles how this sits next to plan Task 21: its `NoInspect_AstroboardShape_IsRow9` is a synthetic shape without the BackOffice dependency, and the plan's expectation for it (`Ok Low`) conflicts with R1. Under R26 that test expects `Suspicious Low` (H03 plus H06 failing from the nuspec groups), and a twin with a net10.0 group expects `Ok Low`. So Task 21's test changes; this golden stays row 4, `suspicious` medium. Status: confirmed by Pascal, 2026-11-05.
+- **The rest** (Crumpled.RobotsTxt 3.1.1 `ok` high row 6; Contentment 4.7.0 `upgrade 6.3.4`; Contentment 6.3.3 `ok` high row 5; Contentment 7.2.1 `no-release` high) are listed with their evidence in the M0 gate section above. Status: confirmed by Pascal, 2026-11-05.
 
 ### 2026-11-03: H13/H14 and row 1 (ruling R27)
 
 - **Decided:** H13 (Marketplace retired or renamed) and H14 (NuGet deprecation with an alternate) turn the result into `replaced` (high), naming the alternate, except on rows 5 to 8 and on a row 1 that resolves to `upgrade` to a non-deprecated, non-retired version of the same id. There they add a note only. A row-1 `no-release` with a high H13/H14 becomes `replaced` and keeps its range and H15 evidence lines. H13/H14 never override `unknown` / `unsafe-archive` (R32). This supersedes plan Task 17's "unless the row is 1 or 5-8".
 - **Evidence:** design 7.4 says "unless row 1 or 5-8 says the current version is fine", and a row-1 `no-release` never says that. Most deprecated packages are old and land on row 1, so the plan's reading would almost never meet the design AC "a package NuGet deprecated with an alternate ... is `replaced`". `Umbraco.Community.Forms.Mailcoach 13.0.0` is a package that tells the readings apart: deprecated on NuGet and retired on the Marketplace, alternate `Umbraco.Community.Forms.Workflows`, range through `Umbraco.Forms.Core 13.5.0` (`Umbraco.Cms.Web.BackOffice [13.0.0, 14.0.0)`), so row 1 at 17.7.2 (checked against the live registration on 2026-11-03; not in the M0 snapshot). It is `replaced` under R27 and `no-release` under the plan's reading. The M0 engine applies R27; neither pick changes (rows 9 and 4).
 - **Cost if wrong:** one rule in Task 17's `TruthTable` and its unit tests. The rename golden's expectation depends on it (with R30).
-- **Status:** proposed, Pascal to confirm.
+- **Status:** confirmed by Pascal, 2026-11-05.
 
 ### 2026-11-03: "highest overall" in an upgrade line
 
 - **Decided:** the M0 gate prints "highest overall" as the highest stable version newer than the current one, and says when it does not support the target. Plan Task 17's `HighestCompatible` (the highest version that clears on metadata) is printed separately as "highest compatible" when it differs.
 - **Evidence:** at 17.7.2, Contentment 7.x does not clear, so `HighestCompatible` is empty for the G6 line, while the brief and design 6.1 expect 7.x to be named. Plan Task 17's test `Contentment621_Target1772_UpgradeTo633_Not7` expected `HighestCompatible "7.2.1"` at 17.7.2, which is false on the data; ruling R25 replaces it (next entry).
 - **Cost if wrong:** report wording and one Task 17 test expectation.
-- **Status:** proposed, Pascal to confirm.
+- **Status:** confirmed by Pascal, 2026-11-05.
 
 ### 2026-11-03: Task 17 G6 tests replaced (ruling R25)
 
@@ -467,27 +471,27 @@ All at target 17.7.2, computed, no overrides, from the recorded snapshot. Record
 - **Evidence:** the M0 gate lines `Umbraco.Community.Contentment 5.2.1 -> upgrade 6.3.4 (highest overall 7.2.2, which does not support 17.7.2)` and `Umbraco.Community.Contentment 5.2.1 @ 18.3.0 -> upgrade 6.1.4 (highest overall 7.2.2)`.
 - **Flag for Pascal:** Contentment 6.1.0 to 6.1.4 declare `[17.0.0, 19.0.0)` in their net10.0 group, while 6.2.0 onwards narrowed it to `[17.0.0, 18.0.0)`. That looks like an over-broad range the author later corrected. So the 18.3.0 pick of 6.1.4 is the correct output of the rule but is probably a false upgrade in practice: the test enshrines what the rule does, not that 6.1.4 works on 18.
 - **Cost if wrong:** two Task 17 tests. If Pascal judges the 6.1.x range untrustworthy, that is an override (H16) for Contentment 6.1.x at 18, not a selection-rule change.
-- **Status:** proposed, Pascal to confirm.
+- **Status:** confirmed by Pascal, 2026-11-05.
 
 ### 2026-11-03: inspect asset-only direct dependencies (ruling R29)
 
 - **Decided:** Task 21 also inspects direct, non-platform dependencies that have no Umbraco path but ship client assets (`App_Plugins/`, `content/App_Plugins/`, `staticwebassets/`), within the same caps. Their assets count when deciding server-only, and their legacy `package.manifest` counts as the package's own H08.
 - **Evidence:** `Plumber.Backoffice 10.1.2` has an empty netstandard2.0 dependency group, so it has no path to `Umbraco.Cms.*` and the M0 engine never inspects it, yet it ships `Content/App_Plugins/Plumber/...` (the v8-13 backoffice). The M0 engine therefore reports `Plumber.Workflow 10.1.2` as server-only. Its verdict is unaffected (row 9, then `replaced` by H14). Under R29 its H08 would fire, moving it to row 4, still `replaced`.
 - **Cost if wrong:** more nupkg downloads per package, which the caps bound. Without it, split "UI" packages hide their legacy manifest, which is the H08 case the tool exists for.
-- **Status:** proposed, Pascal to confirm. Not built in the M0 spike (Task 21).
+- **Status:** confirmed by Pascal, 2026-11-05. Not built in the M0 spike (Task 21).
 
 ### 2026-11-03: rename leg of H13 (ruling R30)
 
 - **Decided:** an id listed in another Marketplace entry's `versionSpecificPackageIds` counts as renamed, and the alternate is that entry's id for the target major. Task 16 builds it if the Marketplace API exposes a reverse lookup; otherwise the seed overrides carry the known renames. With R27, the `Our.Umbraco.Community.Contentment 4.7.0` golden becomes `replaced by Umbraco.Community.Contentment` (high).
 - **Evidence:** `GET /api/v1.0/packages/Our.Umbraco.Community.Contentment` returns 404. `GET /api/v1.0/packages/Umbraco.Community.Contentment` lists the old id under `versionSpecificPackageIds` for Umbraco 8 to 12, and `packageIdForProvidedUmbracoVersion` is the new id at 17.7.2. No lookup from the old id to the new one was found in the OpenAPI document (parameters for `/packages` include `Text` but no id-in-`versionSpecificPackageIds` filter), so the seed-override route is the likely one.
 - **Cost if wrong:** the rename golden reverts to `no-release`, and users of renamed packages get no pointer to the new id.
-- **Status:** proposed, Pascal to confirm. Not built in the M0 spike: it computes `no-release`.
+- **Status:** confirmed by Pascal, 2026-11-05. Not built in the M0 spike: it computes `no-release`.
 
-## Truth table changes (proposed, Pascal to confirm)
+## Truth table changes (confirmed by Pascal, 2026-11-05)
 
 Design 7.4 says that if a golden fixture and the truth table disagree during M0, the builder fixes the table, not the fixture, and records the changed row, the fixture that forced it and the reason here. Task 17 builds the table from design 7.4 plus this section. (This section was `docs/truth-table-changes.md` until 2026-11-05.)
 
-Every entry is **proposed, Pascal to confirm** (Pascal was away for the 6 Nov review; see "M0 decisions" above).
+Every entry is **confirmed by Pascal, 2026-11-05** (Pascal was away for the 6 Nov review; see "M0 decisions" above).
 
 ### Row changes
 
@@ -524,3 +528,25 @@ These change what a golden expects or how a heuristic is defined, not a table ro
 
 - **H06 (ruling R1):** H06 fails when no `lib/` TFM equals the target major's own TFM (net10.0 for 17). Without inspection the nuspec dependency-group TFMs stand in. Row 9 is `suspicious` low when H03 holds and H06 fails.
 - **H04 depth (rulings R3, R34):** a direct dependency is depth 1 and the walk reaches `Umbraco.Cms.*` at depth 3 at most. Each step passes on the remaining depth; it never restarts the budget. `Umbraco.Community.Contentment 4.7.0` needs all 3 (shim, Our, Our.Core, `Umbraco.Cms.Web.Website`).
+
+## Build decisions (M2 onwards)
+
+Deviations from the plan or design made during the build. Same format as "M0 decisions".
+
+### 2026-11-05: `OpenNupkgAsync` returns a `NupkgHandle`, not a `Stream` (Task 12)
+
+- **Decided:** `IPackageMetadataSource.OpenNupkgAsync` returns `NupkgHandle(FilePath, IsTemporary, Length)` instead of the `Stream` sketched in design 7.2. The handle is `IAsyncDisposable` and deletes the file only when it is a temporary download.
+- **Why:** the inspector needs a seekable file for `ZipArchive` (S2), and the source that downloaded the temp file should own its deletion. A file in the global packages folder is opened in place and never deleted.
+- **Cost if wrong:** one interface change in Core and its two callers (Task 21 inspector, Task 23 cache).
+
+### 2026-11-05: synchronous heuristics and the `PackageFacts` shape (Task 14)
+
+- **Decided:** `IHeuristic.Evaluate` is synchronous and pure over `PackageFacts`; `FactsCollector` does all I/O (design 7.2 sketched async heuristics and left names to the builder). `PackageFacts.Umbraco` is a list of every `Umbraco.Cms.*` range found (direct ones, or the walk's when there is none), not a single dependency, and `PackageFacts.UmbracoPathDependencies` lists the dependencies whose contents count for H07/H09. `Evidence` carries an optional `Alternate` id as data (ruling R34). Depth counts a direct dependency as 1 (ruling R3).
+- **Why:** packages often declare several `Umbraco.Cms.*` ids (for example `Umbraco.Cms.Core` and `Umbraco.Cms.Web.Website`), and H01, H02 and H05 must see each range. The M0 gate engine already worked this way.
+- **Cost if wrong:** a rename in Core and the heuristics; no verdict changes.
+
+### 2026-11-05: upgrade walk caps inspections at 3; H19 does not lift confidence (Task 17, M2 review)
+
+- **Decided:** the upgrade walk opens at most 3 candidate nupkgs per package (`UpgradeSelector.MaxInspections`), so a package whose contents disagree with its ranges cannot trigger a download per version. H19 (an HQ package whose ranges are all bounded and allow the target) is evidence only: row 7 stays `ok` medium, as design 7.4 says ("ok high needs H01 plus H07, H09 or H16"). A first build lifted row 7 to high for HQ packages; the M2 review flagged it as an unconfirmed truth-table change, so it was reverted.
+- **Why:** design 6.1 says "inspect only the chosen candidate"; the cap keeps that bounded when the first choice fails. The Marketplace's HQ flag is not independent evidence about a version's contents.
+- **Cost if wrong:** HQ packages scanned with `--no-inspect` show `ok` medium where high might be fair. Pascal can ask for the lift; it is one line in `TruthTable.cs`.

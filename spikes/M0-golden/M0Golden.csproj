@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Standalone spike (plan Task 7): not in the solution, so repo-root CPM, SourceLink and TreatWarningsAsErrors must not apply. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <RollForward>Major</RollForward>
+    <RootNamespace>M0Golden</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Same pin as spike S1 (GO on NuGet.Protocol). -->
+    <PackageReference Include="NuGet.Protocol" Version="7.9.0" />
+  </ItemGroup>
+</Project>

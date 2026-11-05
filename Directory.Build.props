@@ -1,0 +1,36 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+    <!-- One version for every bundled assembly, so ToolInfo (in Core, ruling R15) reports the tool's version. -->
+    <Version>0.0.1-alpha</Version>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <Authors>Pascal Meyer</Authors>
+    <Copyright>Copyright (c) 2026 Pascal Meyer</Copyright>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/PascalA94/Umbraco.Community.PackageCheck</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/PascalA94/Umbraco.Community.PackageCheck</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <!-- Reproducible package contents only matter on CI; locally the path map would hide real paths in stack traces. -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <!-- Several test projects are empty until later tasks fill them; MTP exits 8 for zero tests. -->
+  <PropertyGroup>
+    <TestingPlatformCommandLineArguments>--ignore-exit-code 8</TestingPlatformCommandLineArguments>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+  </ItemGroup>
+</Project>

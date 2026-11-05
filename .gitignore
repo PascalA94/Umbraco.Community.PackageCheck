@@ -1,0 +1,13 @@
+bin/
+obj/
+artifacts/
+.superpowers/
+TestResults/
+.vs/
+.idea/
+*.user
+.DS_Store
+
+# Working notes for Pascal, never committed
+COMMITS-TODO.md
+HANDOVER.md

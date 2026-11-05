@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>Umbraco.Community.PackageCheck.Backoffice</PackageId>
+    <Version>0.0.1-alpha</Version>
+    <TargetFramework>net8.0</TargetFramework>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Description>Placeholder reserving this ID for the phase 3 backoffice view of Umbraco Package Check. Contains no code.</Description>
+    <PackageTags>umbraco upgrade compatibility</PackageTags>
+    <!-- No source files: this package only reserves the ID, so skip the empty assembly and warnings about it. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <IncludeSymbols>false</IncludeSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

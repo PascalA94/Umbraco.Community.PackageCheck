@@ -1,0 +1,25 @@
+{
+  "transitive": false,
+  "transitiveStatus": "NotRequested",
+  "siteUmbracoVersion": "17.7.2",
+  "projects": [
+    {
+      "name": "Web",
+      "packages": [
+        {
+          "id": "Umbraco.Cms",
+          "version": "17.7.2",
+          "direct": true,
+          "unresolved": false
+        },
+        {
+          "id": "Contentment",
+          "version": null,
+          "direct": true,
+          "unresolved": true
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

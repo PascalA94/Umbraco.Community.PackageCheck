@@ -1,0 +1,32 @@
+{
+  "transitive": false,
+  "transitiveStatus": "NotRequested",
+  "siteUmbracoVersion": "17.7.2",
+  "projects": [
+    {
+      "name": "Legacy",
+      "packages": [
+        {
+          "id": "Umbraco.Cms",
+          "version": "13.5.0",
+          "direct": true,
+          "unresolved": false
+        }
+      ]
+    },
+    {
+      "name": "Web",
+      "packages": [
+        {
+          "id": "Umbraco.Cms",
+          "version": "17.7.2",
+          "direct": true,
+          "unresolved": false
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    "mixed Umbraco majors: 13, 17; using the highest"
+  ]
+}

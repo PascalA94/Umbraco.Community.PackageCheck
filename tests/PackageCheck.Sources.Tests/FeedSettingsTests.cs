@@ -1,0 +1,71 @@
+using PackageCheck.Sources.NuGet;
+
+namespace PackageCheck.Sources.Tests;
+
+public class FeedSettingsTests
+{
+    [Theory]
+    [InlineData("https://user:pass@feed.test/v3/index.json", "https://feed.test/v3/index.json")]
+    [InlineData("https://feed.test/v3/index.json?code=SECRET&x=1", "https://feed.test/v3/index.json")]
+    [InlineData("https://user@feed.test:8443/path#frag", "https://feed.test:8443/path")]
+    [InlineData("https://api.nuget.org/v3/index.json", "https://api.nuget.org/v3/index.json")]
+    [InlineData("not a url://user:pw@x", "not a url://x")]
+    [InlineData("/local/feed", "/local/feed")]
+    public void Redact_StripsUserInfoQueryAndFragment(string input, string expected) =>
+        Assert.Equal(expected, FeedSettings.Redact(input));
+
+    [Fact]
+    public void SourcesFor_WithoutMapping_IsEveryEnabledSource()
+    {
+        using var f = new TestFeeds();
+        var site = f.WriteConfig("site", [("a", "https://a.test/v3/index.json"), ("b", "https://b.test/v3/index.json")]);
+
+        Assert.Equal(["a", "b"], f.Settings(site).SourcesFor("Any.Id").Select(s => s.Name));
+    }
+
+    [Fact]
+    public void SourcesFor_WithMapping_IsOnlyMappedSources_CaseInsensitive()
+    {
+        using var f = new TestFeeds();
+        var site = f.WriteConfig("site", [("a", "https://a.test/v3/index.json"), ("b", "https://b.test/v3/index.json")], """
+              <packageSourceMapping>
+                <packageSource key="a"><package pattern="Umbraco.*" /></packageSource>
+                <packageSource key="b"><package pattern="*" /></packageSource>
+              </packageSourceMapping>
+            """);
+        var settings = f.Settings(site);
+
+        Assert.Equal(["a"], settings.SourcesFor("umbraco.community.contentment").Select(s => s.Name));
+        Assert.Equal(["b"], settings.SourcesFor("Other.Thing").Select(s => s.Name));
+    }
+
+    [Fact]
+    public void DisabledSource_IsExcluded()
+    {
+        using var f = new TestFeeds();
+        var site = f.WriteConfig("site", [("a", "https://a.test/v3/index.json"), ("b", "https://b.test/v3/index.json")],
+            """<disabledPackageSources><add key="b" value="true" /></disabledPackageSources>""");
+
+        Assert.Equal(["a"], f.Settings(site).Sources.Select(s => s.Name));
+    }
+
+    [Fact]
+    public void Folders_AreTheOnesGiven_SoTheMachineHttpCacheNeverHidesRequests()
+    {
+        using var f = new TestFeeds();
+        var settings = f.Settings(f.WriteConfig("site", []));
+
+        Assert.Equal(f.GlobalPackages, settings.GlobalPackagesFolder);
+        Assert.Equal(f.HttpCache, settings.HttpCacheFolder);
+        Assert.Equal(f.Temp, settings.TempFolder);
+    }
+
+    [Fact]
+    public void DefaultHttpCache_IsTheToolsOwn()
+    {
+        using var f = new TestFeeds();
+        var settings = FeedSettings.ForSite(f.WriteConfig("site", []));
+
+        Assert.Contains("umbraco-package-check", settings.HttpCacheFolder);
+    }
+}

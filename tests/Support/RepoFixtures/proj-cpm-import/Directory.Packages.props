@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup><ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally></PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Parent.Pkg" Version="1.0.0" />
+    <PackageVersion Include="Local.Pkg" Version="1.0.0" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Umbraco.Cms" Version="17.7.2" />
+    <PackageReference Include="Contentment" Version="$(ContentmentVersion)" />
+  </ItemGroup>
+</Project>

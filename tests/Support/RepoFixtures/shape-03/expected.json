@@ -1,0 +1,31 @@
+{
+  "transitive": false,
+  "transitiveStatus": "NotRequested",
+  "siteUmbracoVersion": "17.7.2",
+  "projects": [
+    {
+      "name": "Web",
+      "packages": [
+        {
+          "id": "Umbraco.Cms",
+          "version": "17.7.2",
+          "direct": true,
+          "unresolved": false
+        },
+        {
+          "id": "Contentment",
+          "version": "6.2.1",
+          "direct": true,
+          "unresolved": false
+        },
+        {
+          "id": "Skybrud.Umbraco.Redirects",
+          "version": "17.0.5",
+          "direct": true,
+          "unresolved": false
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

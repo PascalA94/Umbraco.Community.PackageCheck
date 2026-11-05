@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/placeholders/" />
+  <Folder Name="/placeholders/Backoffice/">
+    <Project Path="placeholders/Backoffice/Umbraco.Community.PackageCheck.Backoffice.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/PackageCheck.Cli/PackageCheck.Cli.csproj" />
+    <Project Path="src/PackageCheck.Core/PackageCheck.Core.csproj" />
+    <Project Path="src/PackageCheck.Inputs/PackageCheck.Inputs.csproj" />
+    <Project Path="src/PackageCheck.Inspect/PackageCheck.Inspect.csproj" />
+    <Project Path="src/PackageCheck.Report/PackageCheck.Report.csproj" />
+    <Project Path="src/PackageCheck.Sources/PackageCheck.Sources.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PackageCheck.Cli.Tests/PackageCheck.Cli.Tests.csproj" />
+    <Project Path="tests/PackageCheck.Core.Tests/PackageCheck.Core.Tests.csproj" />
+    <Project Path="tests/PackageCheck.Inputs.Tests/PackageCheck.Inputs.Tests.csproj" />
+    <Project Path="tests/PackageCheck.Inspect.Tests/PackageCheck.Inspect.Tests.csproj" />
+    <Project Path="tests/PackageCheck.Report.Tests/PackageCheck.Report.Tests.csproj" />
+    <Project Path="tests/PackageCheck.Sources.Tests/PackageCheck.Sources.Tests.csproj" />
+  </Folder>
+</Solution>

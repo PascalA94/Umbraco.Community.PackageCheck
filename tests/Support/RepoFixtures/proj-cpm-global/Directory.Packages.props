@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup><ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally></PropertyGroup>
+  <ItemGroup>
+    <GlobalPackageReference Include="Our.Analyzer" Version="2.0.0" />
+  </ItemGroup>
+</Project>

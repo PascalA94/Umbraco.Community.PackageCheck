@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>umbraco-package-check</ToolCommandName>
+    <PackageId>Umbraco.Community.PackageCheck</PackageId>
+    <TargetFramework>net8.0</TargetFramework>
+    <RollForward>Major</RollForward>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>umbraco upgrade compatibility dotnet-tool cli</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Description>Placeholder for Umbraco Package Check, a dotnet tool that reports which NuGet packages on an Umbraco site are ready for an upgrade.</Description>
+    <RootNamespace>PackageCheck.Cli</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../PackageCheck.Core/PackageCheck.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)../../README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,152 @@
+[
+  {
+    "Id": "astroboard",
+    "Version": "1.1.3",
+    "Sha512": "xwGuWX7OmL0pPVBTKGaRxu2J1Pe/5ErIwv0JdFlRviSBZztFGrIonq8pV/NIWox/RVqr6pcNOQpJD9HJnL0H1Q=="
+  },
+  {
+    "Id": "Crumpled.RobotsTxt",
+    "Version": "3.1.1",
+    "Sha512": "DKcbmhikuTLE8F6IWfERf6fgRohPqQ9i4hj5K/0uu06qqmdIYMm7iD6mjWivFG5z/qX5GcDF4vIArQ7VotqB3w=="
+  },
+  {
+    "Id": "Enterspeed.Source.UmbracoCms.V10",
+    "Version": "3.2.0",
+    "Sha512": "/8FK0EpEwI7VrAmoNFS5hRjdiow4idHpoaHmZ6QxqKGLtiBBZjx8P\u002B4YHD1KnaojYamCoxOeqs2kqbzc0veURQ=="
+  },
+  {
+    "Id": "jcdcdev.Umbraco.Core",
+    "Version": "17.1.0",
+    "Sha512": "wMJYQK1LD5Rpaa\u002ByDl49mnDWYEUrUZBMXkbbv8boj5fyMRj5y\u002B7FIxNMW2WT5wVHiDbnBrOCJeAc7beoD9ZMxg=="
+  },
+  {
+    "Id": "MediaWiz.Forums",
+    "Version": "14.0.0",
+    "Sha512": "2G39/j5bWZf/AdS6kMnL44LKVmU2liPp0l8LXaLBnfi2gVhdW4S2Q4H5BCFJjsJKH1m5tKHIgX/xDAgn8zkmPQ=="
+  },
+  {
+    "Id": "Our.Umbraco.Community.Contentment.Core",
+    "Version": "4.7.0",
+    "Sha512": "1wiuNc2XTjEAUFGPnXA1ns9dkbiMd7UDZB/LcBsmFTGVvk4DbgK26q71Hgnk2TflGAagKgK1\u002B83YT02g700/Wg=="
+  },
+  {
+    "Id": "Our.Umbraco.Community.Contentment",
+    "Version": "4.7.0",
+    "Sha512": "BCePjySozyYBVj0mdKgOVaeLoyBbYOXd\u002BeEcoMThhaP06\u002BvdFS5dVj3YVyyjMpPgVAQaAqfg0rhkl7k2DDpNrg=="
+  },
+  {
+    "Id": "Plumber.Core",
+    "Version": "10.1.2",
+    "Sha512": "CoPWnRpa9u5fI2KfkiOpHlzNkyeRElSDKYrG16PWNKJkEhJFBtpVIpgoLCeMHFfUSOoV/Pk2S7\u002Bf1/yLeCxO4Q=="
+  },
+  {
+    "Id": "Plumber.Web",
+    "Version": "10.1.2",
+    "Sha512": "ngWlyVuezWn11pSYk2PqtJs1Jw5ea/Q35GjKvN/zcemF34w52yu5/tps\u002BJWq\u002BtnYSe6yhVcirOk8rYCkxsJfQQ=="
+  },
+  {
+    "Id": "Plumber.Workflow",
+    "Version": "10.1.2",
+    "Sha512": "p99dGd9TT9DKF06GBHDwuqt1wuFj\u002BG1oqiw6htRHY9Por6N/iGX4D41SWnwmhMYiTmBBxMry1jANNCeqD5HqIQ=="
+  },
+  {
+    "Id": "Skybrud.Umbraco.Redirects.Import",
+    "Version": "13.0.1",
+    "Sha512": "tH\u002B00wJimDixHYgwrsDqwiJP38Fli3VKLttjCjIPcb6u1Mr5cql8fjIOUUcEM3zoNFqmYsV//xXR0fUdpInUgA=="
+  },
+  {
+    "Id": "Skybrud.Umbraco.Redirects.Import",
+    "Version": "17.0.0-beta001",
+    "Sha512": "MIp\u002B2vE90\u002Bw6zcpXtA/N4QRjsAS3LP0S/hSUkuYDA66kdxXz\u002B1vA73JTXYSznaQmmdGXY6VcJXfvZjT1z/cbMw=="
+  },
+  {
+    "Id": "Skybrud.Umbraco.Redirects",
+    "Version": "13.0.8",
+    "Sha512": "ZZGQ8syS09D\u002BraaT3C\u002Bcxwx4grb5WZ/1bx5PKCegjxkFKEeJigDmfR3ch4Uj5W1lNJinlXIDBX2JUFjz/v3cRg=="
+  },
+  {
+    "Id": "Skybrud.Umbraco.Redirects",
+    "Version": "13.0.9",
+    "Sha512": "FGK0uVS\u002BPThIDjT5CT4\u002Bi1xUWTTD1N7VVtsyBb\u002B7Qsuoo5VUocnEE6\u002B5p6rBw0uqPri8GMQPj0d\u002BeTJgEmyNqw=="
+  },
+  {
+    "Id": "Skybrud.Umbraco.Redirects",
+    "Version": "17.0.1",
+    "Sha512": "L7qW6DuQg69oqxyWtpFLNPjY\u002BeY8ZelwQoWo9NUgPP3PHyS\u002BhXeQq2pexvbZnI4/5xFy6/EWXQ9llzTRf2lTSQ=="
+  },
+  {
+    "Id": "Skybrud.Umbraco.Redirects",
+    "Version": "17.0.5",
+    "Sha512": "Vb\u002BCm5TuScRQYCO2o2zDotdh6j9zx8Pf9hNq33icQ9Rf6netr1Rva\u002BbgrpTx5Q3lOro4vbJYnGR3Rhky0BPSiA=="
+  },
+  {
+    "Id": "Skybrud.Umbraco.Redirects",
+    "Version": "17.1.0-beta003",
+    "Sha512": "LIw02aDcZLfjHWbj99k12Hr8N2bIaNYhZT2IrNzrpYsidwCQixY9QZcOCviZJgwpG4U0id23sg9jZ89Fn3/sXQ=="
+  },
+  {
+    "Id": "Umbraco.Community.Contentment",
+    "Version": "4.7.0",
+    "Sha512": "CA8s\u002BiK3NjxVniCOJXtPMDaAx26CAyTOnqtREv0kbSrlQeKGgoUA07lvk8XvpaLZ4zdrJfDg3YRG2ro8EiEhNw=="
+  },
+  {
+    "Id": "Umbraco.Community.Contentment",
+    "Version": "5.2.1",
+    "Sha512": "WOvSdTJUmdaY\u002Bz9EdcujIjlKBkR4Pfzt6H7eHjBnzFCRpC4rEuKOn4dVzLmqZCNcfw2jUBVtzbzAQa4v51S7uA=="
+  },
+  {
+    "Id": "Umbraco.Community.Contentment",
+    "Version": "6.1.4",
+    "Sha512": "61OmyUD6D1B7FjgX4ip6CB4x932wRvf8dXARguYvSV72fJGsddtS94MYkYynH9y3dhuTlg4T8axROiJmpraFsA=="
+  },
+  {
+    "Id": "Umbraco.Community.Contentment",
+    "Version": "6.2.1",
+    "Sha512": "5lC20z0RddWRHtLEN5K\u002BBaSH7UQQE1atEzG9lq8wpcK76JF6PhiBAvF5z8PVzFLn552WSRO25YEeJAqw6934Rw=="
+  },
+  {
+    "Id": "Umbraco.Community.Contentment",
+    "Version": "6.3.3",
+    "Sha512": "lHqagJp\u002BZDiUkLtgwb5TVDirD78WELz7xTXdwDqAOSnB3q1JPbUNoAIVmxi3vYJxyGb\u002B74I0g8vvG\u002BbXGPK69A=="
+  },
+  {
+    "Id": "Umbraco.Community.Contentment",
+    "Version": "6.3.4",
+    "Sha512": "HuEZHcluGoO/TL1rrCtWCwLke3o\u002BmHEGz/9K7/KANurkEdWvJn\u002BZV1qEiVYQTbHYVsgbFgFG7TG4pflOrYXKow=="
+  },
+  {
+    "Id": "Umbraco.Community.Contentment",
+    "Version": "7.2.1",
+    "Sha512": "rKG4q2IPnM5zPEE0VBtq\u002BkMXh30mqWTgwwQp8KhIB17LlBBOa/edddV1CAPsOJqPf5aK9teaeHITpsnCSqNgag=="
+  },
+  {
+    "Id": "Umbraco.Community.SimpleDashboards",
+    "Version": "17.2.0",
+    "Sha512": "/Hg72SdOeUS6ysmYiqRQUM1AGPZh4qh0rEjDSIoCKZqtL9z3y1yB09JXkgAXGk0Ro0q6w/WHbZNe\u002By2QjqxIgg=="
+  },
+  {
+    "Id": "Umbraco.Licenses",
+    "Version": "17.0.5",
+    "Sha512": "GjmOFGVY0vmlAOMDOKJiMaK1fxMhLuwh2FyQqEIAHKOakR4ACpNaqK7rh2tVL1YQG2h07Bq9GUIkefvCjcWBTg=="
+  },
+  {
+    "Id": "Umbraco.Workflow.Core",
+    "Version": "17.5.4",
+    "Sha512": "S6G8b6rBnBXqQxsVtLEYqr2LGZaA/FI7thtc/3XXibCSvnk7tj1kSYP1T9wX/ZBsf6j10FqCKYGu63hauhs08g=="
+  },
+  {
+    "Id": "Umbraco.Workflow.StaticAssets",
+    "Version": "17.5.4",
+    "Sha512": "nqLK4HHDtSpk8oJORLsdAK\u002BwAYFSxUgj5fLwvfC64\u002BV/UiQZtmGs0bH7vbo2BiRGVW2l6KTqJtA\u002B\u002BvEfO4KjaA=="
+  },
+  {
+    "Id": "Umbraco.Workflow.Web",
+    "Version": "17.5.4",
+    "Sha512": "YdEj9VN0L26WAA6Ygjbynklqqy61v7vlpNa17\u002BNqBxTBuoqUk6ROBwiq/Q1SMvpahb4lqCeSKB4QhgzRCN7wVQ=="
+  },
+  {
+    "Id": "Umbraco.Workflow",
+    "Version": "17.5.4",
+    "Sha512": "lTQrVQIaa\u002BClnhZP8bj2XBFJHl95ZiVcZP/X/ytLmCFAb9t8g7D22FnL\u002B923fTs/vovaykOe9Wif3TSM7PEjcQ=="
+  }
+]

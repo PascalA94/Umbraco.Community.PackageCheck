@@ -1,0 +1,3 @@
+<Project>
+  <!-- Intentionally empty: the spike is standalone and must not inherit the repo root settings (CPM, warnings-as-errors). -->
+</Project>

@@ -1,0 +1,5 @@
+{
+  "Url": "https://api.marketplace.umbraco.com/api/v1.0/packages/Our.Umbraco.Community.Contentment?SupportsUmbracoVersionNumber=17.7.2",
+  "Status": 404,
+  "ContentType": "application/problem\u002Bjson; charset=utf-8"
+}

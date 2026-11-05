@@ -1,0 +1,454 @@
+[
+  {
+    "id": "astroboard",
+    "version": "1.1.3",
+    "sha512": "xwGuWX7OmL0pPVBTKGaRxu2J1Pe/5ErIwv0JdFlRviSBZztFGrIonq8pV/NIWox/RVqr6pcNOQpJD9HJnL0H1Q==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "suspicious",
+      "confidence": "medium",
+      "row": 4
+    },
+    "expected": {
+      "verdict": "suspicious",
+      "confidence": "medium"
+    },
+    "expectedStatus": "design AC",
+    "designAc": "design 6.1/8: computed verdict suspicious with evidence \"open range >= 13.8.1\" and \"legacy package.manifest only\""
+  },
+  {
+    "id": "Umbraco.Community.SimpleDashboards",
+    "version": "17.2.0",
+    "sha512": "/Hg72SdOeUS6ysmYiqRQUM1AGPZh4qh0rEjDSIoCKZqtL9z3y1yB09JXkgAXGk0Ro0q6w/WHbZNe+y2QjqxIgg==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "ok",
+      "confidence": "high",
+      "row": 5
+    },
+    "expected": {
+      "verdict": "ok",
+      "confidence": "high"
+    },
+    "expectedStatus": "design AC",
+    "designAc": "design 6.1/8: ok, confidence high, through H09 evidence"
+  },
+  {
+    "id": "Umbraco.Workflow",
+    "version": "17.5.4",
+    "sha512": "lTQrVQIaa+ClnhZP8bj2XBFJHl95ZiVcZP/X/ytLmCFAb9t8g7D22FnL+923fTs/vovaykOe9Wif3TSM7PEjcQ==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "ok",
+      "confidence": "high",
+      "row": 5
+    },
+    "expected": {
+      "verdict": "ok",
+      "confidence": "high"
+    },
+    "expectedStatus": "design AC",
+    "designAc": "design 6.1/8: ok; umbraco-package.json in its Umbraco.Workflow.StaticAssets dependency counts as evidence"
+  },
+  {
+    "id": "Umbraco.Community.Contentment",
+    "version": "6.2.1",
+    "sha512": "5lC20z0RddWRHtLEN5K+BaSH7UQQE1atEzG9lq8wpcK76JF6PhiBAvF5z8PVzFLn552WSRO25YEeJAqw6934Rw==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "ok",
+      "confidence": "high",
+      "row": 5
+    },
+    "expected": {
+      "verdict": "ok",
+      "confidence": "high"
+    },
+    "expectedStatus": "proposed, Pascal to confirm",
+    "designAc": "design 6.1/8: upgrade to 6.3.3, not 7.x. Replaced by ruling R19: computes ok"
+  },
+  {
+    "id": "Umbraco.Community.Contentment",
+    "version": "5.2.1",
+    "sha512": "WOvSdTJUmdaY+z9EdcujIjlKBkR4Pfzt6H7eHjBnzFCRpC4rEuKOn4dVzLmqZCNcfw2jUBVtzbzAQa4v51S7uA==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "upgrade",
+      "confidence": "high",
+      "row": 1,
+      "recommended": "6.3.4",
+      "latestStable": "7.2.2"
+    },
+    "expected": {
+      "verdict": "upgrade",
+      "confidence": "high",
+      "recommended": "6.3.4",
+      "latestStable": "7.2.2"
+    },
+    "expectedStatus": "proposed, Pascal to confirm",
+    "why": "G6 (lowest clearing major, highest patch, not 7.x) at the gate target; newest 5.x, net8.0 range [13.2.0, 14.0.0) excludes 17.7.2. Ruling R19 / Task 7 brief."
+  },
+  {
+    "id": "Crumpled.RobotsTxt",
+    "version": "3.1.1",
+    "sha512": "DKcbmhikuTLE8F6IWfERf6fgRohPqQ9i4hj5K/0uu06qqmdIYMm7iD6mjWivFG5z/qX5GcDF4vIArQ7VotqB3w==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "ok",
+      "confidence": "high",
+      "row": 6
+    },
+    "expected": {
+      "verdict": "ok",
+      "confidence": "high"
+    },
+    "expectedStatus": "proposed, Pascal to confirm",
+    "designAc": "design 6.1/9: not suspicious because of its manifests"
+  },
+  {
+    "id": "MediaWiz.Forums",
+    "version": "14.0.0",
+    "sha512": "2G39/j5bWZf/AdS6kMnL44LKVmU2liPp0l8LXaLBnfi2gVhdW4S2Q4H5BCFJjsJKH1m5tKHIgX/xDAgn8zkmPQ==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "ok",
+      "confidence": "low",
+      "row": 8
+    },
+    "expected": {
+      "verdict": "ok",
+      "confidence": "low"
+    },
+    "expectedStatus": "proposed, Pascal to confirm"
+  },
+  {
+    "id": "Umbraco.Community.Contentment",
+    "version": "4.7.0",
+    "sha512": "CA8s+iK3NjxVniCOJXtPMDaAx26CAyTOnqtREv0kbSrlQeKGgoUA07lvk8XvpaLZ4zdrJfDg3YRG2ro8EiEhNw==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "upgrade",
+      "confidence": "high",
+      "row": 1,
+      "recommended": "6.3.4",
+      "latestStable": "7.2.2"
+    },
+    "expected": {
+      "verdict": "upgrade",
+      "confidence": "high",
+      "recommended": "6.3.4",
+      "latestStable": "7.2.2"
+    },
+    "expectedStatus": "proposed, Pascal to confirm"
+  },
+  {
+    "id": "Umbraco.Community.Contentment",
+    "version": "6.3.3",
+    "sha512": "lHqagJp+ZDiUkLtgwb5TVDirD78WELz7xTXdwDqAOSnB3q1JPbUNoAIVmxi3vYJxyGb+74I0g8vvG+bXGPK69A==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "ok",
+      "confidence": "high",
+      "row": 5
+    },
+    "expected": {
+      "verdict": "ok",
+      "confidence": "high"
+    },
+    "expectedStatus": "proposed, Pascal to confirm"
+  },
+  {
+    "id": "Umbraco.Community.Contentment",
+    "version": "7.2.1",
+    "sha512": "rKG4q2IPnM5zPEE0VBtq+kMXh30mqWTgwwQp8KhIB17LlBBOa/edddV1CAPsOJqPf5aK9teaeHITpsnCSqNgag==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "no-release",
+      "confidence": "high",
+      "row": 1
+    },
+    "expected": {
+      "verdict": "no-release",
+      "confidence": "high"
+    },
+    "expectedStatus": "proposed, Pascal to confirm"
+  },
+  {
+    "id": "Our.Umbraco.Community.Contentment",
+    "version": "4.7.0",
+    "sha512": "BCePjySozyYBVj0mdKgOVaeLoyBbYOXd+eEcoMThhaP06+vdFS5dVj3YVyyjMpPgVAQaAqfg0rhkl7k2DDpNrg==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "no-release",
+      "confidence": "high",
+      "row": 1
+    },
+    "expected": {
+      "verdict": "replaced",
+      "confidence": "high",
+      "recommended": "Umbraco.Community.Contentment"
+    },
+    "expectedStatus": "proposed, Pascal to confirm; pending R30 (rename leg) with R27. Until R30 is built the engine computes no-release.",
+    "why": "Design 9 lists the Our.Umbraco.Community.Contentment rename. The old id is not on the Marketplace (404) and is not deprecated on NuGet, so no H13/H14 fires."
+  },
+  {
+    "id": "Skybrud.Umbraco.Redirects",
+    "version": "13.0.9",
+    "sha512": "FGK0uVS+PThIDjT5CT4+i1xUWTTD1N7VVtsyBb+7Qsuoo5VUocnEE6+5p6rBw0uqPri8GMQPj0d+eTJgEmyNqw==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "upgrade",
+      "confidence": "high",
+      "row": 1,
+      "recommended": "17.0.5",
+      "latestStable": "18.0.0"
+    },
+    "expected": {
+      "verdict": "upgrade",
+      "confidence": "high",
+      "recommended": "17.0.5",
+      "latestStable": "18.0.0"
+    },
+    "expectedStatus": "proposed, Pascal to confirm"
+  },
+  {
+    "id": "Skybrud.Umbraco.Redirects",
+    "version": "13.0.9",
+    "sha512": "FGK0uVS+PThIDjT5CT4+i1xUWTTD1N7VVtsyBb+7Qsuoo5VUocnEE6+5p6rBw0uqPri8GMQPj0d+eTJgEmyNqw==",
+    "target": "17.7.2",
+    "options": [
+      "--prerelease"
+    ],
+    "computed": {
+      "verdict": "upgrade",
+      "confidence": "high",
+      "row": 1,
+      "recommended": "17.1.0-beta003",
+      "latestStable": "18.0.0"
+    },
+    "expected": {
+      "verdict": "upgrade",
+      "confidence": "high",
+      "recommended": "17.1.0-beta003",
+      "latestStable": "18.0.0"
+    },
+    "expectedStatus": "proposed, Pascal to confirm"
+  },
+  {
+    "id": "astroboard",
+    "version": "1.1.3",
+    "sha512": "xwGuWX7OmL0pPVBTKGaRxu2J1Pe/5ErIwv0JdFlRviSBZztFGrIonq8pV/NIWox/RVqr6pcNOQpJD9HJnL0H1Q==",
+    "target": "17.7.2",
+    "options": [
+      "--no-inspect"
+    ],
+    "computed": {
+      "verdict": "suspicious",
+      "confidence": "medium",
+      "row": 4
+    },
+    "expected": {
+      "verdict": "suspicious",
+      "confidence": "medium"
+    },
+    "expectedStatus": "proposed, Pascal to confirm"
+  },
+  {
+    "id": "Plumber.Workflow",
+    "version": "10.1.2",
+    "sha512": "p99dGd9TT9DKF06GBHDwuqt1wuFj+G1oqiw6htRHY9Por6N/iGX4D41SWnwmhMYiTmBBxMry1jANNCeqD5HqIQ==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "replaced",
+      "confidence": "high",
+      "row": 9,
+      "recommended": "Umbraco.Workflow"
+    },
+    "expected": {
+      "verdict": "replaced",
+      "confidence": "high",
+      "recommended": "Umbraco.Workflow"
+    },
+    "expectedStatus": "proposed, Pascal to confirm",
+    "why": "Deprecated on NuGet (Other, Legacy) with alternate Umbraco.Workflow; the former name of a package already in the goldens. Lands on row 9, so replaced under either reading of the H13/H14 row rule."
+  },
+  {
+    "id": "Enterspeed.Source.UmbracoCms.V10",
+    "version": "3.2.0",
+    "sha512": "/8FK0EpEwI7VrAmoNFS5hRjdiow4idHpoaHmZ6QxqKGLtiBBZjx8P+4YHD1KnaojYamCoxOeqs2kqbzc0veURQ==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "replaced",
+      "confidence": "high",
+      "row": 4,
+      "recommended": "Enterspeed.Source.UmbracoCms"
+    },
+    "expected": {
+      "verdict": "replaced",
+      "confidence": "high",
+      "recommended": "Enterspeed.Source.UmbracoCms"
+    },
+    "expectedStatus": "proposed, Pascal to confirm",
+    "why": "Retired on the Marketplace with alternate Enterspeed.Source.UmbracoCms (also NuGet-deprecated). Lands on row 4, so replaced under either reading of the H13/H14 row rule."
+  },
+  {
+    "id": "Skybrud.Umbraco.Redirects.Import",
+    "version": "13.0.1",
+    "sha512": "tH+00wJimDixHYgwrsDqwiJP38Fli3VKLttjCjIPcb6u1Mr5cql8fjIOUUcEM3zoNFqmYsV//xXR0fUdpInUgA==",
+    "target": "17.7.2",
+    "options": [],
+    "computed": {
+      "verdict": "no-release",
+      "confidence": "high",
+      "row": 1,
+      "prereleaseCompatible": "17.0.0-beta001"
+    },
+    "expected": {
+      "verdict": "no-release",
+      "confidence": "high",
+      "prereleaseCompatible": "17.0.0-beta001"
+    },
+    "expectedStatus": "proposed, Pascal to confirm",
+    "why": "Ruling R2: only a prerelease clears. 13.0.1 is the newest stable ([13.0.0, 13.999.0)); the only 17.x is 17.0.0-beta001 ([17.0.0, 17.999.0))."
+  },
+  {
+    "id": "Skybrud.Umbraco.Redirects.Import",
+    "version": "13.0.1",
+    "sha512": "tH+00wJimDixHYgwrsDqwiJP38Fli3VKLttjCjIPcb6u1Mr5cql8fjIOUUcEM3zoNFqmYsV//xXR0fUdpInUgA==",
+    "target": "17.7.2",
+    "options": [
+      "--prerelease"
+    ],
+    "computed": {
+      "verdict": "upgrade",
+      "confidence": "high",
+      "row": 1,
+      "recommended": "17.0.0-beta001"
+    },
+    "expected": {
+      "verdict": "upgrade",
+      "confidence": "high",
+      "recommended": "17.0.0-beta001"
+    },
+    "expectedStatus": "proposed, Pascal to confirm",
+    "why": "Ruling R2: only a prerelease clears. 13.0.1 is the newest stable ([13.0.0, 13.999.0)); the only 17.x is 17.0.0-beta001 ([17.0.0, 17.999.0))."
+  },
+  {
+    "id": "Umbraco.Community.Contentment",
+    "version": "5.2.1",
+    "sha512": "WOvSdTJUmdaY+z9EdcujIjlKBkR4Pfzt6H7eHjBnzFCRpC4rEuKOn4dVzLmqZCNcfw2jUBVtzbzAQa4v51S7uA==",
+    "target": "18.3.0",
+    "options": [],
+    "computed": {
+      "verdict": "upgrade",
+      "confidence": "high",
+      "row": 1,
+      "recommended": "6.1.4",
+      "highestCompatible": "7.2.2",
+      "latestStable": "7.2.2"
+    },
+    "expected": {
+      "verdict": "upgrade",
+      "confidence": "high",
+      "recommended": "6.1.4",
+      "highestCompatible": "7.2.2",
+      "latestStable": "7.2.2"
+    },
+    "expectedStatus": "proposed, Pascal to confirm",
+    "why": "G6 where two majors clear: Contentment 6.1.x declares [17.0.0, 19.0.0) and 7.x [18.0.0, 19.0.0), so the lowest-major rule picks 6.1.4 over 7.2.2."
+  },
+  {
+    "id": "jcdcdev.Umbraco.Core",
+    "version": "17.1.0",
+    "sha512": "wMJYQK1LD5Rpaa+yDl49mnDWYEUrUZBMXkbbv8boj5fyMRj5y+7FIxNMW2WT5wVHiDbnBrOCJeAc7beoD9ZMxg=="
+  },
+  {
+    "id": "Our.Umbraco.Community.Contentment.Core",
+    "version": "4.7.0",
+    "sha512": "1wiuNc2XTjEAUFGPnXA1ns9dkbiMd7UDZB/LcBsmFTGVvk4DbgK26q71Hgnk2TflGAagKgK1+83YT02g700/Wg=="
+  },
+  {
+    "id": "Plumber.Core",
+    "version": "10.1.2",
+    "sha512": "CoPWnRpa9u5fI2KfkiOpHlzNkyeRElSDKYrG16PWNKJkEhJFBtpVIpgoLCeMHFfUSOoV/Pk2S7+f1/yLeCxO4Q=="
+  },
+  {
+    "id": "Plumber.Web",
+    "version": "10.1.2",
+    "sha512": "ngWlyVuezWn11pSYk2PqtJs1Jw5ea/Q35GjKvN/zcemF34w52yu5/tps+JWq+tnYSe6yhVcirOk8rYCkxsJfQQ=="
+  },
+  {
+    "id": "Skybrud.Umbraco.Redirects",
+    "version": "13.0.8",
+    "sha512": "ZZGQ8syS09D+raaT3C+cxwx4grb5WZ/1bx5PKCegjxkFKEeJigDmfR3ch4Uj5W1lNJinlXIDBX2JUFjz/v3cRg=="
+  },
+  {
+    "id": "Skybrud.Umbraco.Redirects",
+    "version": "17.0.1",
+    "sha512": "L7qW6DuQg69oqxyWtpFLNPjY+eY8ZelwQoWo9NUgPP3PHyS+hXeQq2pexvbZnI4/5xFy6/EWXQ9llzTRf2lTSQ=="
+  },
+  {
+    "id": "Skybrud.Umbraco.Redirects",
+    "version": "17.0.5",
+    "sha512": "Vb+Cm5TuScRQYCO2o2zDotdh6j9zx8Pf9hNq33icQ9Rf6netr1Rva+bgrpTx5Q3lOro4vbJYnGR3Rhky0BPSiA=="
+  },
+  {
+    "id": "Skybrud.Umbraco.Redirects",
+    "version": "17.1.0-beta003",
+    "sha512": "LIw02aDcZLfjHWbj99k12Hr8N2bIaNYhZT2IrNzrpYsidwCQixY9QZcOCviZJgwpG4U0id23sg9jZ89Fn3/sXQ=="
+  },
+  {
+    "id": "Skybrud.Umbraco.Redirects.Import",
+    "version": "17.0.0-beta001",
+    "sha512": "MIp+2vE90+w6zcpXtA/N4QRjsAS3LP0S/hSUkuYDA66kdxXz+1vA73JTXYSznaQmmdGXY6VcJXfvZjT1z/cbMw=="
+  },
+  {
+    "id": "Umbraco.Community.Contentment",
+    "version": "6.1.4",
+    "sha512": "61OmyUD6D1B7FjgX4ip6CB4x932wRvf8dXARguYvSV72fJGsddtS94MYkYynH9y3dhuTlg4T8axROiJmpraFsA=="
+  },
+  {
+    "id": "Umbraco.Community.Contentment",
+    "version": "6.3.4",
+    "sha512": "HuEZHcluGoO/TL1rrCtWCwLke3o+mHEGz/9K7/KANurkEdWvJn+ZV1qEiVYQTbHYVsgbFgFG7TG4pflOrYXKow=="
+  },
+  {
+    "id": "Umbraco.Community.Contentment",
+    "version": "7.2.2",
+    "sha512": "xN1j+FTK6M+MjeDrbpisotCb4X5qbWRZjdBuBr4ix7wSSpCJSIdoWMesXbydPVnyhCu2ayeIsmgODxJCYnWNBQ=="
+  },
+  {
+    "id": "Umbraco.Licenses",
+    "version": "17.0.5",
+    "sha512": "GjmOFGVY0vmlAOMDOKJiMaK1fxMhLuwh2FyQqEIAHKOakR4ACpNaqK7rh2tVL1YQG2h07Bq9GUIkefvCjcWBTg=="
+  },
+  {
+    "id": "Umbraco.Workflow.Core",
+    "version": "17.5.4",
+    "sha512": "S6G8b6rBnBXqQxsVtLEYqr2LGZaA/FI7thtc/3XXibCSvnk7tj1kSYP1T9wX/ZBsf6j10FqCKYGu63hauhs08g=="
+  },
+  {
+    "id": "Umbraco.Workflow.StaticAssets",
+    "version": "17.5.4",
+    "sha512": "nqLK4HHDtSpk8oJORLsdAK+wAYFSxUgj5fLwvfC64+V/UiQZtmGs0bH7vbo2BiRGVW2l6KTqJtA++vEfO4KjaA=="
+  },
+  {
+    "id": "Umbraco.Workflow.Web",
+    "version": "17.5.4",
+    "sha512": "YdEj9VN0L26WAA6Ygjbynklqqy61v7vlpNa17+NqBxTBuoqUk6ROBwiq/Q1SMvpahb4lqCeSKB4QhgzRCN7wVQ=="
+  }
+]

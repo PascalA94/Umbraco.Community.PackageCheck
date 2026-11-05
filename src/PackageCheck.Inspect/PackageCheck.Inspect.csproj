@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Libraries are bundled into the tool, never published on their own (design 7.1). -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+</Project>

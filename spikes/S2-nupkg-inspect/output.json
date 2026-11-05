@@ -1,0 +1,509 @@
+[
+  {
+    "file": "astroboard.1.1.3.nupkg",
+    "id": "astroboard",
+    "version": "1.1.3",
+    "sha512": "xwGuWX7OmL0pPVBTKGaRxu2J1Pe/5ErIwv0JdFlRviSBZztFGrIonq8pV/NIWox/RVqr6pcNOQpJD9HJnL0H1Q==",
+    "bytes": 765135,
+    "entries": 18,
+    "unsafeEntries": [],
+    "libTfms": [
+      "net8.0"
+    ],
+    "umbracoPackageJson": [],
+    "packageManifest": [
+      "App_Plugins/Astroboard/package.manifest"
+    ],
+    "propsFiles": [],
+    "basePaths": [],
+    "jsAssetCount": 3,
+    "jsAssetsSample": [
+      "App_Plugins/Astroboard/astroboard/dist/_astro/client.awbY_rl6.js",
+      "App_Plugins/Astroboard/astroboard/dist/_astro/Dashboard.CtJsR9ai.js",
+      "App_Plugins/Astroboard/astroboard/dist/_astro/runtime-dom.esm-bundler.DFpj0LD5.js"
+    ],
+    "dependencyGroups": [
+      {
+        "tfm": "net8.0",
+        "deps": [
+          "Umbraco.Cms.Web.BackOffice 13.8.1",
+          "Umbraco.Cms.Web.Website 13.8.1"
+        ]
+      }
+    ],
+    "flatDependencies": [],
+    "bytesReadFromEntries": 4183
+  },
+  {
+    "file": "crumpled.robotstxt.3.1.1.nupkg",
+    "id": "Crumpled.RobotsTxt",
+    "version": "3.1.1",
+    "sha512": "DKcbmhikuTLE8F6IWfERf6fgRohPqQ9i4hj5K/0uu06qqmdIYMm7iD6mjWivFG5z/qX5GcDF4vIArQ7VotqB3w==",
+    "bytes": 66617,
+    "entries": 18,
+    "unsafeEntries": [],
+    "libTfms": [
+      "net8.0"
+    ],
+    "umbracoPackageJson": [
+      "staticwebassets/umbraco-package.json"
+    ],
+    "packageManifest": [
+      "staticwebassets/package.manifest"
+    ],
+    "propsFiles": [
+      "build/Microsoft.AspNetCore.StaticWebAssets.props"
+    ],
+    "basePaths": [
+      {
+        "props": "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "basePaths": [
+          "App_Plugins/Crumpled.RobotsTxt"
+        ]
+      }
+    ],
+    "jsAssetCount": 0,
+    "jsAssetsSample": [],
+    "dependencyGroups": [
+      {
+        "tfm": "net8.0",
+        "deps": [
+          "Umbraco.Cms.Web.Website 13.0.0"
+        ]
+      }
+    ],
+    "flatDependencies": [],
+    "bytesReadFromEntries": 3871
+  },
+  {
+    "file": "mediawiz.forums.14.0.0.nupkg",
+    "id": "MediaWiz.Forums",
+    "version": "14.0.0",
+    "sha512": "2G39/j5bWZf/AdS6kMnL44LKVmU2liPp0l8LXaLBnfi2gVhdW4S2Q4H5BCFJjsJKH1m5tKHIgX/xDAgn8zkmPQ==",
+    "bytes": 293322,
+    "entries": 66,
+    "unsafeEntries": [],
+    "libTfms": [
+      "net8.0"
+    ],
+    "umbracoPackageJson": [],
+    "packageManifest": [],
+    "propsFiles": [
+      "build/Microsoft.AspNetCore.StaticWebAssets.props"
+    ],
+    "basePaths": [
+      {
+        "props": "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "basePaths": [
+          "_content/MediaWiz.Forums"
+        ]
+      }
+    ],
+    "jsAssetCount": 3,
+    "jsAssetsSample": [
+      "staticwebassets/scripts/captcha.js",
+      "staticwebassets/scripts/mediawiz.forums.js",
+      "staticwebassets/scripts/mediawiz.forums.min.js"
+    ],
+    "dependencyGroups": [
+      {
+        "tfm": "net8.0",
+        "deps": [
+          "MediaWiz.Client 14.0.0",
+          "Microsoft.Maui.Graphics 8.0.21",
+          "Microsoft.Maui.Graphics.Skia 8.0.21",
+          "SkiaSharp.NativeAssets.Linux.NoDependencies 2.88.8",
+          "Umbraco.Cms.Core 14.0.0",
+          "Umbraco.Cms.Examine.Lucene 14.0.0",
+          "Umbraco.Cms.Infrastructure 14.0.0",
+          "Umbraco.Cms.Web.Common 14.0.0",
+          "Umbraco.Cms.Web.Website 14.0.0"
+        ]
+      }
+    ],
+    "flatDependencies": [],
+    "bytesReadFromEntries": 28579
+  },
+  {
+    "file": "our.umbraco.community.contentment.4.7.0.nupkg",
+    "id": "Our.Umbraco.Community.Contentment",
+    "version": "4.7.0",
+    "sha512": "BCePjySozyYBVj0mdKgOVaeLoyBbYOXd\u002BeEcoMThhaP06\u002BvdFS5dVj3YVyyjMpPgVAQaAqfg0rhkl7k2DDpNrg==",
+    "bytes": 124436,
+    "entries": 80,
+    "unsafeEntries": [],
+    "libTfms": [],
+    "umbracoPackageJson": [],
+    "packageManifest": [
+      "content/App_Plugins/Contentment/package.manifest"
+    ],
+    "propsFiles": [],
+    "basePaths": [],
+    "jsAssetCount": 1,
+    "jsAssetsSample": [
+      "content/App_Plugins/Contentment/contentment.js"
+    ],
+    "dependencyGroups": [],
+    "flatDependencies": [
+      "Our.Umbraco.Community.Contentment.Core 4.7.0"
+    ],
+    "bytesReadFromEntries": 1082
+  },
+  {
+    "file": "skybrud.umbraco.redirects.17.1.0-beta003.nupkg",
+    "id": "Skybrud.Umbraco.Redirects",
+    "version": "17.1.0-beta003",
+    "sha512": "LIw02aDcZLfjHWbj99k12Hr8N2bIaNYhZT2IrNzrpYsidwCQixY9QZcOCviZJgwpG4U0id23sg9jZ89Fn3/sXQ==",
+    "bytes": 138690,
+    "entries": 45,
+    "unsafeEntries": [],
+    "libTfms": [
+      "net10.0"
+    ],
+    "umbracoPackageJson": [],
+    "packageManifest": [],
+    "propsFiles": [
+      "build/Microsoft.AspNetCore.StaticWebAssets.props"
+    ],
+    "basePaths": [
+      {
+        "props": "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "basePaths": [
+          "App_Plugins/Skybrud.Umbraco.Redirects"
+        ]
+      }
+    ],
+    "jsAssetCount": 25,
+    "jsAssetsSample": [
+      "staticwebassets/Conditions/Dashboard.js",
+      "staticwebassets/Conditions/Document.js",
+      "staticwebassets/Conditions/Media.js",
+      "staticwebassets/Elements/Base.js"
+    ],
+    "dependencyGroups": [
+      {
+        "tfm": "net10.0",
+        "deps": [
+          "Skybrud.Essentials 1.1.69",
+          "Umbraco.Cms.Api.Management [17.0.0, 17.9.9)",
+          "Umbraco.Cms.Core [17.0.0, 17.999.0)",
+          "Umbraco.Cms.Web.Website [17.0.0, 17.999.0)"
+        ]
+      }
+    ],
+    "flatDependencies": [],
+    "bytesReadFromEntries": 33748
+  },
+  {
+    "file": "umbraco.community.contentment.6.2.1.nupkg",
+    "id": "Umbraco.Community.Contentment",
+    "version": "6.2.1",
+    "sha512": "5lC20z0RddWRHtLEN5K\u002BBaSH7UQQE1atEzG9lq8wpcK76JF6PhiBAvF5z8PVzFLn552WSRO25YEeJAqw6934Rw==",
+    "bytes": 796673,
+    "entries": 180,
+    "unsafeEntries": [],
+    "libTfms": [
+      "net10.0",
+      "net9.0"
+    ],
+    "umbracoPackageJson": [],
+    "packageManifest": [],
+    "propsFiles": [
+      "build/Microsoft.AspNetCore.StaticWebAssets.props"
+    ],
+    "basePaths": [
+      {
+        "props": "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "basePaths": [
+          "/"
+        ]
+      }
+    ],
+    "jsAssetCount": 94,
+    "jsAssetsSample": [
+      "staticwebassets/App_Plugins/Contentment/allow-clear.controller.js",
+      "staticwebassets/App_Plugins/Contentment/backoffice-sections.data-source.js",
+      "staticwebassets/App_Plugins/Contentment/blocks.element.js",
+      "staticwebassets/App_Plugins/Contentment/buttons.element.js"
+    ],
+    "dependencyGroups": [
+      {
+        "tfm": "net10.0",
+        "deps": [
+          "Umbraco.Cms.Api.Management [17.0.0, 18.0.0)",
+          "Umbraco.Cms.Core [17.0.0, 18.0.0)",
+          "Umbraco.Cms.Web.Website [17.0.0, 18.0.0)"
+        ]
+      },
+      {
+        "tfm": "net9.0",
+        "deps": [
+          "Umbraco.Cms.Api.Management [16.0.0, 17.0.0)",
+          "Umbraco.Cms.Core [16.0.0, 17.0.0)",
+          "Umbraco.Cms.Web.Website [16.0.0, 17.0.0)"
+        ]
+      }
+    ],
+    "flatDependencies": [],
+    "bytesReadFromEntries": 206953
+  },
+  {
+    "file": "umbraco.community.contentment.6.3.3.nupkg",
+    "id": "Umbraco.Community.Contentment",
+    "version": "6.3.3",
+    "sha512": "lHqagJp\u002BZDiUkLtgwb5TVDirD78WELz7xTXdwDqAOSnB3q1JPbUNoAIVmxi3vYJxyGb\u002B74I0g8vvG\u002BbXGPK69A==",
+    "bytes": 819116,
+    "entries": 180,
+    "unsafeEntries": [],
+    "libTfms": [
+      "net10.0",
+      "net9.0"
+    ],
+    "umbracoPackageJson": [],
+    "packageManifest": [],
+    "propsFiles": [
+      "build/Microsoft.AspNetCore.StaticWebAssets.props"
+    ],
+    "basePaths": [
+      {
+        "props": "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "basePaths": [
+          "/"
+        ]
+      }
+    ],
+    "jsAssetCount": 94,
+    "jsAssetsSample": [
+      "staticwebassets/App_Plugins/Contentment/allow-clear.controller-mdmjkD3M.js",
+      "staticwebassets/App_Plugins/Contentment/backoffice-sections.data-source-CX-bT0sS.js",
+      "staticwebassets/App_Plugins/Contentment/blocks.element-DqU0ljbo.js",
+      "staticwebassets/App_Plugins/Contentment/buttons.element-DLcqFe79.js"
+    ],
+    "dependencyGroups": [
+      {
+        "tfm": "net10.0",
+        "deps": [
+          "Umbraco.Cms.Api.Management [17.0.0, 18.0.0)",
+          "Umbraco.Cms.Core [17.0.0, 18.0.0)",
+          "Umbraco.Cms.Web.Website [17.0.0, 18.0.0)"
+        ]
+      },
+      {
+        "tfm": "net9.0",
+        "deps": [
+          "Umbraco.Cms.Api.Management [16.0.0, 17.0.0)",
+          "Umbraco.Cms.Core [16.0.0, 17.0.0)",
+          "Umbraco.Cms.Web.Website [16.0.0, 17.0.0)"
+        ]
+      }
+    ],
+    "flatDependencies": [],
+    "bytesReadFromEntries": 210558
+  },
+  {
+    "file": "umbraco.community.contentment.7.2.1.nupkg",
+    "id": "Umbraco.Community.Contentment",
+    "version": "7.2.1",
+    "sha512": "rKG4q2IPnM5zPEE0VBtq\u002BkMXh30mqWTgwwQp8KhIB17LlBBOa/edddV1CAPsOJqPf5aK9teaeHITpsnCSqNgag==",
+    "bytes": 882607,
+    "entries": 239,
+    "unsafeEntries": [],
+    "libTfms": [
+      "net10.0"
+    ],
+    "umbracoPackageJson": [],
+    "packageManifest": [],
+    "propsFiles": [
+      "build/Microsoft.AspNetCore.StaticWebAssets.props"
+    ],
+    "basePaths": [
+      {
+        "props": "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "basePaths": [
+          "/"
+        ]
+      }
+    ],
+    "jsAssetCount": 124,
+    "jsAssetsSample": [
+      "staticwebassets/App_Plugins/Contentment/allow-clear.controller-mdmjkD3M.js",
+      "staticwebassets/App_Plugins/Contentment/backoffice-colors.data-source-BGO-YN0B.js",
+      "staticwebassets/App_Plugins/Contentment/backoffice-sections.data-source-CX-bT0sS.js",
+      "staticwebassets/App_Plugins/Contentment/blocks.element-DqU0ljbo.js"
+    ],
+    "dependencyGroups": [
+      {
+        "tfm": "net10.0",
+        "deps": [
+          "Umbraco.Cms.Api.Management [18.0.0, 19.0.0)",
+          "Umbraco.Cms.Core [18.0.0, 19.0.0)",
+          "Umbraco.Cms.Web.Website [18.0.0, 19.0.0)"
+        ]
+      }
+    ],
+    "flatDependencies": [],
+    "bytesReadFromEntries": 286021
+  },
+  {
+    "file": "umbraco.community.contentment.7.2.2.nupkg",
+    "id": "Umbraco.Community.Contentment",
+    "version": "7.2.2",
+    "sha512": "xN1j\u002BFTK6M\u002BMjeDrbpisotCb4X5qbWRZjdBuBr4ix7wSSpCJSIdoWMesXbydPVnyhCu2ayeIsmgODxJCYnWNBQ==",
+    "bytes": 886953,
+    "entries": 239,
+    "unsafeEntries": [],
+    "libTfms": [
+      "net10.0"
+    ],
+    "umbracoPackageJson": [],
+    "packageManifest": [],
+    "propsFiles": [
+      "build/Microsoft.AspNetCore.StaticWebAssets.props"
+    ],
+    "basePaths": [
+      {
+        "props": "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "basePaths": [
+          "/"
+        ]
+      }
+    ],
+    "jsAssetCount": 124,
+    "jsAssetsSample": [
+      "staticwebassets/App_Plugins/Contentment/allow-clear.controller-mdmjkD3M.js",
+      "staticwebassets/App_Plugins/Contentment/backoffice-colors.data-source-BGO-YN0B.js",
+      "staticwebassets/App_Plugins/Contentment/backoffice-sections.data-source-CX-bT0sS.js",
+      "staticwebassets/App_Plugins/Contentment/blocks.element-DqU0ljbo.js"
+    ],
+    "dependencyGroups": [
+      {
+        "tfm": "net10.0",
+        "deps": [
+          "Umbraco.Cms.Api.Management [18.0.0, 19.0.0)",
+          "Umbraco.Cms.Core [18.0.0, 19.0.0)",
+          "Umbraco.Cms.Web.Website [18.0.0, 19.0.0)"
+        ]
+      }
+    ],
+    "flatDependencies": [],
+    "bytesReadFromEntries": 286021
+  },
+  {
+    "file": "umbraco.community.simpledashboards.17.2.0.nupkg",
+    "id": "Umbraco.Community.SimpleDashboards",
+    "version": "17.2.0",
+    "sha512": "/Hg72SdOeUS6ysmYiqRQUM1AGPZh4qh0rEjDSIoCKZqtL9z3y1yB09JXkgAXGk0Ro0q6w/WHbZNe\u002By2QjqxIgg==",
+    "bytes": 140775,
+    "entries": 17,
+    "unsafeEntries": [],
+    "libTfms": [
+      "net10.0"
+    ],
+    "umbracoPackageJson": [],
+    "packageManifest": [],
+    "propsFiles": [
+      "build/Microsoft.AspNetCore.StaticWebAssets.props"
+    ],
+    "basePaths": [
+      {
+        "props": "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "basePaths": [
+          "/"
+        ]
+      }
+    ],
+    "jsAssetCount": 2,
+    "jsAssetsSample": [
+      "staticwebassets/App_Plugins/Umbraco.Community.SimpleDashboards/dist/en-us-NQIMNv_S.js",
+      "staticwebassets/App_Plugins/Umbraco.Community.SimpleDashboards/dist/index.js"
+    ],
+    "dependencyGroups": [
+      {
+        "tfm": "net10.0",
+        "deps": [
+          "Umbraco.Cms.Api.Common [17.0.0, 18.0.0)",
+          "Umbraco.Cms.Api.Management [17.0.0, 18.0.0)",
+          "Umbraco.Cms.Core [17.0.0, 18.0.0)",
+          "Umbraco.Cms.Web.Website [17.0.0, 18.0.0)",
+          "jcdcdev.Umbraco.Core [17.1.0, 18.0.0)"
+        ]
+      }
+    ],
+    "flatDependencies": [],
+    "bytesReadFromEntries": 6676
+  },
+  {
+    "file": "umbraco.workflow.17.5.4.nupkg",
+    "id": "Umbraco.Workflow",
+    "version": "17.5.4",
+    "sha512": "lTQrVQIaa\u002BClnhZP8bj2XBFJHl95ZiVcZP/X/ytLmCFAb9t8g7D22FnL\u002B923fTs/vovaykOe9Wif3TSM7PEjcQ==",
+    "bytes": 25596,
+    "entries": 10,
+    "unsafeEntries": [],
+    "libTfms": [
+      "net10.0"
+    ],
+    "umbracoPackageJson": [],
+    "packageManifest": [],
+    "propsFiles": [],
+    "basePaths": [],
+    "jsAssetCount": 0,
+    "jsAssetsSample": [],
+    "dependencyGroups": [
+      {
+        "tfm": "net10.0",
+        "deps": [
+          "Umbraco.Workflow.Core [17.5.4, 18.0.0)",
+          "Umbraco.Workflow.StaticAssets [17.5.4, 18.0.0)",
+          "Umbraco.Workflow.Web [17.5.4, 18.0.0)"
+        ]
+      }
+    ],
+    "flatDependencies": [],
+    "bytesReadFromEntries": 1150
+  },
+  {
+    "file": "umbraco.workflow.staticassets.17.5.4.nupkg",
+    "id": "Umbraco.Workflow.StaticAssets",
+    "version": "17.5.4",
+    "sha512": "nqLK4HHDtSpk8oJORLsdAK\u002BwAYFSxUgj5fLwvfC64\u002BV/UiQZtmGs0bH7vbo2BiRGVW2l6KTqJtA\u002B\u002BvEfO4KjaA==",
+    "bytes": 1378874,
+    "entries": 315,
+    "unsafeEntries": [],
+    "libTfms": [
+      "net10.0"
+    ],
+    "umbracoPackageJson": [
+      "staticwebassets/umbraco-package.json"
+    ],
+    "packageManifest": [],
+    "propsFiles": [
+      "build/Microsoft.AspNetCore.StaticWebAssets.props"
+    ],
+    "basePaths": [
+      {
+        "props": "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "basePaths": [
+          "App_Plugins/Umbraco.Workflow"
+        ]
+      }
+    ],
+    "jsAssetCount": 147,
+    "jsAssetsSample": [
+      "staticwebassets/active-workflows/active-workflows-collection.context-Br0KVE5H.js",
+      "staticwebassets/active-workflows/active-workflows-collection.element-C-LCeIu_.js",
+      "staticwebassets/active-workflows/index.js",
+      "staticwebassets/advanced-search/advanced-search.dashboard.element-DfP4kC19.js"
+    ],
+    "dependencyGroups": [
+      {
+        "tfm": "net10.0",
+        "deps": [
+          "Umbraco.Workflow.Core [17.5.4, 18.0.0)"
+        ]
+      }
+    ],
+    "flatDependencies": [],
+    "bytesReadFromEntries": 376364
+  }
+]

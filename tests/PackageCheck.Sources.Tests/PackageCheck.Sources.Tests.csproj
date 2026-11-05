@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
+    <Using Include="Xunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/PackageCheck.Sources/PackageCheck.Sources.csproj" />
+    <!-- Shared helpers and recorded HTTP live in tests/Support (ruling R14). -->
+    <Compile Include="../Support/FixtureHttpHandler.cs" LinkBase="Support" />
+    <Content Include="../Support/Http/**" LinkBase="Http" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

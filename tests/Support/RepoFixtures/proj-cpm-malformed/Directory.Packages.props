@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup><ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally></PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Contentment" Version="6.2.1"
+</Project>

@@ -1,0 +1,25 @@
+{
+  "transitive": true,
+  "transitiveStatus": "FromLockFile",
+  "siteUmbracoVersion": "17.7.2",
+  "projects": [
+    {
+      "name": "Web",
+      "packages": [
+        {
+          "id": "Umbraco.Cms",
+          "version": "17.7.2",
+          "direct": true,
+          "unresolved": false
+        },
+        {
+          "id": "Umbraco.Workflow",
+          "version": "17.1.0",
+          "direct": false,
+          "unresolved": false
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

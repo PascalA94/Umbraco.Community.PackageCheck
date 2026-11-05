@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+    <Using Include="Xunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/PackageCheck.Inputs/PackageCheck.Inputs.csproj" />
+    <!-- Fixtures are shared across test projects (ruling R14), so they live in tests/Support. -->
+    <Content Include="../Support/RepoFixtures/**" LinkBase="RepoFixtures" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

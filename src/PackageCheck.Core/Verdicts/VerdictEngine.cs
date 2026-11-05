@@ -21,10 +21,24 @@ public interface IVerdictEngine
 public sealed class VerdictEngine(FactsCollector facts, OverrideSet overrides, TimeProvider clock, IReadOnlyList<IHeuristic>? heuristics = null)
     : IVerdictEngine
 {
-    private readonly IReadOnlyList<IHeuristic> _heuristics = heuristics ?? HeuristicSet.Metadata(null);
+    private readonly IReadOnlyList<IHeuristic> _heuristics = heuristics ?? HeuristicSet.All(null);
     private readonly H15PrereleaseOnly _h15 = new();
 
     public async Task<PackageVerdict> EvaluateAsync(SitePackage pkg, TargetVersion target, ScanOptions o, CancellationToken ct)
+    {
+        try
+        {
+            return await EvaluateCoreAsync(pkg, target, o, ct);
+        }
+        catch (Exception e) when (e is not (OperationCanceledException or OutOfMemoryException or PackageSourceException))
+        {
+            // One hostile package or library bug must not abort the whole site (security review M3, S2). The message is
+            // fixed: an exception's own text can quote package-controlled bytes.
+            return Unknown(pkg, UnknownReason.SourceError, "tool", "this package could not be judged (unexpected error while reading it)");
+        }
+    }
+
+    private async Task<PackageVerdict> EvaluateCoreAsync(SitePackage pkg, TargetVersion target, ScanOptions o, CancellationToken ct)
     {
         if (pkg.Ref.Version is not { } version)
             return Unknown(pkg, UnknownReason.UnresolvedProperty, "project",
@@ -33,7 +47,7 @@ public sealed class VerdictEngine(FactsCollector facts, OverrideSet overrides, T
         PackageFacts f;
         try
         {
-            f = await facts.CollectAsync(pkg.Ref.Id, version, target, new FactsOptions(o.Inspect, pkg.Projects), ct);
+            f = await facts.CollectAsync(pkg.Ref.Id, version, target, new FactsOptions(o.Inspect, pkg.ProjectDirectories ?? []), ct);
         }
         catch (PackageSourceException e)
         {
@@ -66,6 +80,8 @@ public sealed class VerdictEngine(FactsCollector facts, OverrideSet overrides, T
         UpgradeChoice? choice = null;
         var candidates = new ConcurrentDictionary<NuGetVersion, PackageFacts?>();
         var clears = new ConcurrentDictionary<NuGetVersion, bool>();
+        // Candidates whose contents could not be read, with the reason (offline, over the cap, not on the feed).
+        var uninspected = new ConcurrentDictionary<NuGetVersion, string>();
 
         async Task<UpgradeChoice> WalkAsync()
         {
@@ -77,8 +93,24 @@ public sealed class VerdictEngine(FactsCollector facts, OverrideSet overrides, T
                 return clears[v] = cf is { Details.Listed: true } && TruthTable.Decide(Evaluate(cf, target), cf).Clears;
             }
 
-            // Inspection of candidates arrives with Task 21; until then a metadata clear is a full clear.
-            return await UpgradeSelector.SelectAsync(f.Version, f.AllVersions, MetadataClears, _ => Task.FromResult(true), o.AllowPrerelease);
+            // Design 6.1: only the chosen candidate is inspected (bounded by UpgradeSelector.MaxInspections).
+            async Task<bool> FullyClears(NuGetVersion v)
+            {
+                if (!o.Inspect) return true;
+                try
+                {
+                    var cf = await facts.CollectAsync(f.Id, v, target, new FactsOptions(Inspect: true, [], Marketplace: false, AssetDependencies: false), ct);
+                    if (!cf.ContentsKnown) uninspected[v] = cf.InspectionNotes?.FirstOrDefault() ?? "nupkg not available";
+                    return TruthTable.Decide(Evaluate(cf, target), cf).Clears;
+                }
+                catch (PackageSourceException e) when (e.Reason == UnknownReason.UnsafeArchive)
+                {
+                    // A hostile candidate is never recommended; the current version's verdict is not about its archive.
+                    return false;
+                }
+            }
+
+            return await UpgradeSelector.SelectAsync(f.Version, f.AllVersions, MetadataClears, FullyClears, o.AllowPrerelease);
         }
 
         if (table.Row == 1)
@@ -87,10 +119,16 @@ public sealed class VerdictEngine(FactsCollector facts, OverrideSet overrides, T
             var withClearing = f with { ClearingVersions = clears.Where(kv => kv.Value).Select(kv => kv.Key).Order().ToList() };
             evidence = [.. evidence, .. _h15.Evaluate(withClearing, target)];
             recommendedDeprecated = choice.Recommended is { } r && candidates.GetValueOrDefault(r)?.Details.Deprecation is not null;
+            // Review M3 (Q2): an upgrade to a version nobody could open rests on its ranges alone; say so, and do not
+            // claim high confidence for it.
+            var notInspected = choice.Recommended is { } rec && uninspected.TryGetValue(rec, out _);
+            if (notInspected)
+                evidence = [.. evidence, new Evidence("inspect", EvidenceResult.Info, EvidenceWeight.Info, EvidenceSources.Nupkg,
+                    $"recommended version {choice.Recommended!.ToNormalizedString()} was not inspected ({uninspected[choice.Recommended]}); its ranges allow the target")];
             verdict = WithChoice(verdict with
             {
                 Verdict = choice.Recommended is null ? Verdict.NoRelease : Verdict.Upgrade,
-                Confidence = Confidence.High,
+                Confidence = notInspected ? Confidence.Medium : Confidence.High,
                 Evidence = evidence,
             }, choice);
         }

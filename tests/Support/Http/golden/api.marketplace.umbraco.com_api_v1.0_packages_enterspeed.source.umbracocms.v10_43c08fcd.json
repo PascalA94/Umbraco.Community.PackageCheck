@@ -1,0 +1,7 @@
+{
+  "method": "GET",
+  "url": "https://api.marketplace.umbraco.com/api/v1.0/packages/Enterspeed.Source.UmbracoCms.V10",
+  "status": 200,
+  "contentType": "application/json",
+  "body": "{\u0022alternatePackageIdForRetiredPackage\u0022:\u0022Enterspeed.Source.UmbracoCms\u0022,\u0022isHQ\u0022:false,\u0022isRetired\u0022:true,\u0022latestVersionNumberForProvidedUmbracoVersion\u0022:\u00223.2.0\u0022,\u0022packageId\u0022:\u0022Enterspeed.Source.UmbracoCms.V10\u0022,\u0022packageIdForProvidedUmbracoVersion\u0022:\u0022Enterspeed.Source.UmbracoCms.V10\u0022,\u0022versionSpecificPackageIds\u0022:[]}"
+}

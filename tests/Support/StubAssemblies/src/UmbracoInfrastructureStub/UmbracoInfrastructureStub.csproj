@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Same assembly name as Umbraco's, so references resolve to AssemblyRef "Umbraco.Infrastructure" (ruling R23). -->
+  <PropertyGroup><AssemblyName>Umbraco.Infrastructure</AssemblyName></PropertyGroup>
+</Project>

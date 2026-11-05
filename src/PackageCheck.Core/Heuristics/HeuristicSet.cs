@@ -19,4 +19,17 @@ public static class HeuristicSet
         .. versions is null ? Array.Empty<IHeuristic>() : [new H18StaleRelease(versions)],
         new H19HqStrictRange(),
     ];
+
+    /// <summary>Metadata plus the nupkg checks (H06-H09, H11). Contents checks give nothing when contents were not read.</summary>
+    public static IReadOnlyList<IHeuristic> All(UmbracoVersionsTable? versions) =>
+    [
+        .. Metadata(versions),
+        new H06TfmFit(),
+        new H07UmbracoPackageJson(),
+        new H08LegacyManifestOnly(),
+        new H09ManifestReaderRef(),
+        new H11ManagementApiNoClient(),
+        new H17LeftoverAppPlugins(),
+        new InspectionNotes(),
+    ];
 }

@@ -9,11 +9,13 @@ using PackageCheck.Core.Targets;
 namespace PackageCheck.Core.Facts;
 
 /// <summary>
-/// Gathers <see cref="PackageFacts"/> for one package at one target: details, versions and the H04 walk to
-/// <c>Umbraco.Cms.*</c>. One instance per run; feed answers are cached per id and per (id, version).
-/// Source failures surface as <see cref="PackageSourceException"/> for the engine to turn into <c>unknown</c>.
+/// Gathers <see cref="PackageFacts"/> for one package at one target: details, versions, the H04 walk to
+/// <c>Umbraco.Cms.*</c> and, when asked, the contents of the package and its dependencies. One instance per run; feed
+/// answers and inspections are cached per id and per (id, version).
+/// Source failures and unsafe archives surface as <see cref="PackageSourceException"/> for the engine to turn into <c>unknown</c>.
 /// </summary>
-public sealed class FactsCollector(IPackageMetadataSource meta, IMarketplaceSource? marketplace = null)
+public sealed class FactsCollector(IPackageMetadataSource meta, IMarketplaceSource? marketplace = null, INupkgInspector? inspector = null,
+    IProjectFileSystem? projectFs = null)
 {
     /// <summary>A direct dependency is depth 1; <c>Umbraco.Cms.*</c> may sit at depth 3 at most (design 7.4 H04, R3).</summary>
     public const int MaxDepth = 3;
@@ -23,6 +25,10 @@ public sealed class FactsCollector(IPackageMetadataSource meta, IMarketplaceSour
 
     private readonly ConcurrentDictionary<string, Lazy<Task<PackageVersions?>>> _versions = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, Lazy<Task<PackageDetails?>>> _details = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, Lazy<Task<Inspected>>> _inspections = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>One nupkg's contents, or null with a note when it could not be read (over the size cap, not on the feed).</summary>
+    private sealed record Inspected(InspectionResult? Result, string? Note);
 
     public async Task<PackageFacts> CollectAsync(string id, NuGetVersion v, TargetVersion t, FactsOptions o, CancellationToken ct)
     {
@@ -37,17 +43,89 @@ public sealed class FactsCollector(IPackageMetadataSource meta, IMarketplaceSour
         var noCompatibleGroup = group is null && details.DependencyGroups.Count > 0;
         // A package with no route to the CMS is not worth a Marketplace call (and is hidden unless --verbose).
         var askMarketplace = marketplace is not null && o.Marketplace && (umbraco.Count > 0 || noCompatibleGroup);
+
+        InspectionResult? own = null;
+        List<InspectionResult> deps = [], assetDeps = [];
+        var notes = new List<string>();
+        if (o.Inspect && inspector is not null)
+        {
+            var self = await InspectAsync(details.Identity, ct);
+            own = self.Result;
+            if (self.Note is not null) notes.Add(self.Note);
+            // Dependency contents only count next to the package's own (H07/H09 "in this package or a dependency").
+            if (own is not null)
+            {
+                foreach (var dep in umbracoDeps)
+                {
+                    var r = await InspectAsync(dep, ct);
+                    if (r.Result is not null) deps.Add(r.Result); else if (r.Note is not null) notes.Add(r.Note);
+                }
+                if (o.AssetDependencies) await InspectAssetDependenciesAsync(id, group, umbracoDeps, assetDeps, notes, ct);
+            }
+            notes.AddRange(new[] { own }.Concat(deps).Concat(assetDeps).OfType<InspectionResult>()
+                .SelectMany(r => (r.Notes ?? []).Select(n => $"{r.PackageId} {r.Version}: {n}")));
+        }
+
         return new PackageFacts(
             id, v, details, group?.TargetFramework, umbraco, umbracoDeps,
             group?.Packages.Select(p => p.Id).ToList() ?? [],
-            Own: null, Dependencies: [],
+            Own: own, Dependencies: deps,
             // The release base, as for every range check: the API's badge logic has no notion of our prerelease rule.
             Marketplace: askMarketplace ? await marketplace!.GetAsync(id, t.RangeVersion, ct) : null,
             o.ProjectDirectories, all.Versions,
             LatestPublished: await LatestPublishedAsync(id, all.Versions, ct),
             MissingDependencies: missing.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
-            NoCompatibleGroup: noCompatibleGroup);
+            NoCompatibleGroup: noCompatibleGroup,
+            AssetDependencies: assetDeps,
+            InspectionNotes: notes,
+            ProjectAppPlugins: projectFs is null ? null
+                : o.ProjectDirectories.SelectMany(projectFs.AppPluginsFolders).Distinct(StringComparer.OrdinalIgnoreCase).ToList());
     }
+
+    /// <summary>
+    /// Ruling R29: direct dependencies with no path to the CMS are inspected too, and kept when they ship client assets or
+    /// a manifest. That is the split "UI" package (Plumber.Workflow -> Plumber.Backoffice), whose legacy manifest is the
+    /// package's own H08. Only dependencies sharing the package's first id segment are opened: without that, every
+    /// library dependency (SkiaSharp native assets, ClosedXML) is downloaded to learn it has no backoffice (Task 24 ruling).
+    /// </summary>
+    private async Task InspectAssetDependenciesAsync(string id, PackageDependencyGroup? group, IReadOnlyList<PackageIdentity> umbracoDeps,
+        List<InspectionResult> assetDeps, List<string> notes, CancellationToken ct)
+    {
+        var family = id.Split('.')[0] + ".";
+        foreach (var d in group?.Packages ?? [])
+        {
+            if (IsCms(d.Id) || IsPlatform(d.Id) || umbracoDeps.Any(u => u.Id.Equals(d.Id, StringComparison.OrdinalIgnoreCase))) continue;
+            if (!d.Id.StartsWith(family, StringComparison.OrdinalIgnoreCase)) continue;
+            var resolved = await ResolveLowestAsync(d.Id, d.VersionRange, ct);
+            if (resolved is null) continue;
+            var r = await InspectAsync(resolved.Identity, ct);
+            if (r.Result is { } c && (c.HasClientAssets || c.HasUmbracoPackageJson || c.HasLegacyManifest)) assetDeps.Add(c);
+            else if (r.Note is not null) notes.Add(r.Note);
+        }
+    }
+
+    /// <summary>
+    /// Opens and inspects one nupkg, once per run. The handle is disposed in a finally, so a temporary download is deleted
+    /// whether inspection succeeds or throws (Review Focus 5). An unsafe archive propagates: the package becomes unknown.
+    /// </summary>
+    private Task<Inspected> InspectAsync(PackageIdentity id, CancellationToken ct) =>
+        _inspections.GetOrAdd($"{id.Id}/{id.Version.ToNormalizedString()}", _ => new Lazy<Task<Inspected>>(async () =>
+        {
+            var name = $"{id.Id} {id.Version.ToNormalizedString()}";
+            try
+            {
+                var handle = await meta.OpenNupkgAsync(id.Id, id.Version, ct);
+                if (handle is null) return new Inspected(null, $"{name}: nupkg not available; metadata only");
+                await using (handle)
+                {
+                    return new Inspected(await inspector!.InspectAsync(id, handle, ct), null);
+                }
+            }
+            catch (NupkgTooLargeException)
+            {
+                return new Inspected(null, $"{name}: nupkg over size cap; metadata only");
+            }
+        })).Value;
 
     // Unlisted nuget.org versions carry no real date (PackageDetails.Published), so walk down to the newest that has one.
     private const int MaxPublishedLookups = 5;

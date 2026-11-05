@@ -4,11 +4,16 @@ namespace PackageCheck.Sources.Tests;
 
 public class FeedSettingsTests
 {
+    // Security review M3 (S1): tokens also live in paths (Cloudsmith entitlements, MyGet /auth/<key>/), so only
+    // scheme, host and port are ever shown. A '/' inside a password must not move the host.
     [Theory]
-    [InlineData("https://user:pass@feed.test/v3/index.json", "https://feed.test/v3/index.json")]
-    [InlineData("https://feed.test/v3/index.json?code=SECRET&x=1", "https://feed.test/v3/index.json")]
-    [InlineData("https://user@feed.test:8443/path#frag", "https://feed.test:8443/path")]
-    [InlineData("https://api.nuget.org/v3/index.json", "https://api.nuget.org/v3/index.json")]
+    [InlineData("https://user:pass@feed.test/v3/index.json", "https://feed.test")]
+    [InlineData("https://feed.test/v3/index.json?code=SECRET&x=1", "https://feed.test")]
+    [InlineData("https://user@feed.test:8443/path#frag", "https://feed.test:8443")]
+    [InlineData("https://api.nuget.org/v3/index.json", "https://api.nuget.org")]
+    [InlineData("https://dl.cloudsmith.io/SECRETTOKEN/org/repo/nuget/index.json", "https://dl.cloudsmith.io")]
+    [InlineData("https://www.myget.org/F/feed/auth/SECRET-KEY/api/v3/index.json", "https://www.myget.org")]
+    [InlineData("https://user:pa/ss@host.test/v3/index.json", "https://host.test")]
     [InlineData("not a url://user:pw@x", "not a url://x")]
     [InlineData("/local/feed", "/local/feed")]
     public void Redact_StripsUserInfoQueryAndFragment(string input, string expected) =>

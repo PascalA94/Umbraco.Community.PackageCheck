@@ -304,4 +304,16 @@ public class VerdictEngineOverrideTests
         var v = await Engine(feed, Broken("P", "[2.1.0]")).EvaluateAsync(Site("P", "1.0.0"), Target("17.7.2"), Metadata, TestContext.Current.CancellationToken);
         Assert.Equal((Verdict.Upgrade, "2.0.0", (OverrideApplied?)null), (v.Verdict, v.Recommended, v.Override));
     }
+
+    [Fact]
+    public async Task UnexpectedException_IsUnknownSourceError_WithAFixedMessage() // security review M3 (S2)
+    {
+        var feed = new FakeFeed().Add("Pkg", "1.0.0", "Umbraco.Cms.Core [17.0.0, 18.0.0)");
+        feed.CrashingIds.Add("Pkg");
+        var v = await new VerdictEngine(new FactsCollector(feed), OverrideSet.Empty, new FakeTimeProvider()).EvaluateAsync(
+            new SitePackage(new PackageRef("Pkg", "1.0.0", NuGetVersion.Parse("1.0.0"), true, null), ["Site"]),
+            Target("17.7.2"), new ScanOptions(false, false, false), CancellationToken.None);
+        Assert.Equal((Verdict.Unknown, (UnknownReason?)UnknownReason.SourceError), (v.Verdict, v.Reason));
+        Assert.DoesNotContain(v.Evidence, e => e.Detail.Contains("boom"));
+    }
 }

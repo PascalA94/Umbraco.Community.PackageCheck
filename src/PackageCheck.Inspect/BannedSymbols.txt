@@ -1,0 +1,17 @@
+T:System.Runtime.Loader.AssemblyLoadContext;Package content is hostile: never load it (design 4). Use MetadataTypeScanner.
+T:System.Reflection.MetadataLoadContext;Package content is hostile: read metadata with PEReader only (design 4).
+M:System.Reflection.Assembly.Load(System.Byte[]);Package content is hostile: never load it (design 4).
+M:System.Reflection.Assembly.Load(System.Byte[],System.Byte[]);Package content is hostile: never load it (design 4).
+M:System.Reflection.Assembly.Load(System.String);Package content is hostile: never load it (design 4).
+M:System.Reflection.Assembly.Load(System.Reflection.AssemblyName);Package content is hostile: never load it (design 4).
+M:System.Reflection.Assembly.LoadFrom(System.String);Package content is hostile: never load it (design 4).
+M:System.Reflection.Assembly.LoadFrom(System.String,System.Byte[],System.Configuration.Assemblies.AssemblyHashAlgorithm);Package content is hostile: never load it (design 4).
+M:System.Reflection.Assembly.LoadFile(System.String);Package content is hostile: never load it (design 4).
+M:System.Reflection.Assembly.UnsafeLoadFrom(System.String);Package content is hostile: never load it (design 4).
+M:System.Reflection.Assembly.ReflectionOnlyLoad(System.Byte[]);Package content is hostile: never load it (design 4).
+M:System.Reflection.Assembly.ReflectionOnlyLoad(System.String);Package content is hostile: never load it (design 4).
+M:System.Reflection.Assembly.ReflectionOnlyLoadFrom(System.String);Package content is hostile: never load it (design 4).
+M:System.IO.Compression.ZipFileExtensions.ExtractToDirectory(System.IO.Compression.ZipArchive,System.String);Never extract a nupkg to disk (design 4).
+M:System.IO.Compression.ZipFileExtensions.ExtractToDirectory(System.IO.Compression.ZipArchive,System.String,System.Boolean);Never extract a nupkg to disk (design 4).
+M:System.IO.Compression.ZipFileExtensions.ExtractToFile(System.IO.Compression.ZipArchiveEntry,System.String);Never extract a nupkg to disk (design 4).
+M:System.IO.Compression.ZipFileExtensions.ExtractToFile(System.IO.Compression.ZipArchiveEntry,System.String,System.Boolean);Never extract a nupkg to disk (design 4).

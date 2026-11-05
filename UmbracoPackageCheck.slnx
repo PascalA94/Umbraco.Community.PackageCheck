@@ -14,6 +14,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/PackageCheck.Cli.Tests/PackageCheck.Cli.Tests.csproj" />
     <Project Path="tests/PackageCheck.Core.Tests/PackageCheck.Core.Tests.csproj" />
+    <Project Path="tests/PackageCheck.Golden.Tests/PackageCheck.Golden.Tests.csproj" />
     <Project Path="tests/PackageCheck.Inputs.Tests/PackageCheck.Inputs.Tests.csproj" />
     <Project Path="tests/PackageCheck.Inspect.Tests/PackageCheck.Inspect.Tests.csproj" />
     <Project Path="tests/PackageCheck.Report.Tests/PackageCheck.Report.Tests.csproj" />

@@ -127,12 +127,53 @@ public sealed class FixtureHttpHandler : HttpMessageHandler
             ["status"] = (int)res.StatusCode,
             ["contentType"] = contentType,
         };
-        if (contentType.Contains("json", StringComparison.OrdinalIgnoreCase) || contentType.StartsWith("text/", StringComparison.OrdinalIgnoreCase))
+        var isText = contentType.Contains("json", StringComparison.OrdinalIgnoreCase) || contentType.StartsWith("text/", StringComparison.OrdinalIgnoreCase);
+        if (isText) bytes = Encoding.UTF8.GetBytes(StripMarketplaceFreeText(request.RequestUri!, Encoding.UTF8.GetString(bytes)));
+        if (isText && bytes.Length <= GzipThreshold)
             node["body"] = Encoding.UTF8.GetString(bytes);
+        else if (isText)
+            // Registration pages run to megabytes; gzip keeps the committed fixtures small.
+            node["bodyGzipBase64"] = Convert.ToBase64String(Gzip(bytes));
         else
             node["bodyBase64"] = Convert.ToBase64String(bytes);
         await File.WriteAllTextAsync(file, node.ToJsonString(new JsonSerializerOptions { WriteIndented = true }), ct);
         return Build((int)res.StatusCode, contentType, bytes);
+    }
+
+    // Ruling R33: Marketplace bodies are authored by package owners (README, descriptions). Only the fields the client
+    // reads, plus ids, are kept in a recording, so no third-party free text is committed to this repo.
+    private static readonly HashSet<string> MarketplaceFields = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "packageId", "isRetired", "alternatePackageIdForRetiredPackage", "isHQ",
+        "latestVersionNumberForProvidedUmbracoVersion", "packageIdForProvidedUmbracoVersion", "versionSpecificPackageIds",
+    };
+
+    public static string StripMarketplaceFreeText(Uri uri, string body)
+    {
+        if (!uri.Host.EndsWith("marketplace.umbraco.com", StringComparison.OrdinalIgnoreCase)) return body;
+        JsonNode? parsed;
+        try { parsed = JsonNode.Parse(body); }
+        catch (JsonException) { return body; }
+        if (parsed is not JsonObject obj) return body;
+        foreach (var name in obj.Select(kv => kv.Key).Where(k => !MarketplaceFields.Contains(k)).ToList()) obj.Remove(name);
+        return obj.ToJsonString();
+    }
+
+    private const int GzipThreshold = 64 * 1024;
+
+    private static byte[] Gzip(byte[] data)
+    {
+        using var ms = new MemoryStream();
+        using (var gz = new System.IO.Compression.GZipStream(ms, System.IO.Compression.CompressionLevel.SmallestSize)) gz.Write(data);
+        return ms.ToArray();
+    }
+
+    private static byte[] Gunzip(byte[] data)
+    {
+        using var gz = new System.IO.Compression.GZipStream(new MemoryStream(data), System.IO.Compression.CompressionMode.Decompress);
+        using var ms = new MemoryStream();
+        gz.CopyTo(ms);
+        return ms.ToArray();
     }
 
     private static HttpResponseMessage Replay(string file)
@@ -140,7 +181,9 @@ public sealed class FixtureHttpHandler : HttpMessageHandler
         var node = JsonNode.Parse(File.ReadAllText(file))!;
         var bytes = node["bodyBase64"] is { } b64
             ? Convert.FromBase64String(b64.GetValue<string>())
-            : Encoding.UTF8.GetBytes(node["body"]?.GetValue<string>() ?? "");
+            : node["bodyGzipBase64"] is { } gz
+                ? Gunzip(Convert.FromBase64String(gz.GetValue<string>()))
+                : Encoding.UTF8.GetBytes(node["body"]?.GetValue<string>() ?? "");
         return Build(node["status"]!.GetValue<int>(), node["contentType"]?.GetValue<string>() ?? "application/json", bytes);
     }
 

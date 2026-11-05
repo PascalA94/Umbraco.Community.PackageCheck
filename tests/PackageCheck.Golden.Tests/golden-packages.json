@@ -450,5 +450,35 @@
     "id": "Umbraco.Workflow.Web",
     "version": "17.5.4",
     "sha512": "YdEj9VN0L26WAA6Ygjbynklqqy61v7vlpNa17+NqBxTBuoqUk6ROBwiq/Q1SMvpahb4lqCeSKB4QhgzRCN7wVQ=="
+  },
+  {
+    "id": "Skybrud.Essentials",
+    "version": "1.1.64",
+    "sha512": "5wkSEJDoEetwMkUSkVV94iIdqJpqVXf2JJ/x9WaeyONh3V4C1VMNqa/9Tx7KzkFXK792BU4w5g8Bk1lHm/4+vA=="
+  },
+  {
+    "id": "Enterspeed.Source.Sdk",
+    "version": "0.8.0",
+    "sha512": "JrvbiPNeQjKCnnnMSOhXwCE6m2JPSHhlgC0PrptjUJPOD1C50usJbHupeC3lglmirCWTl3alqplzPEtml7GZNQ=="
+  },
+  {
+    "id": "Plumber.Backoffice",
+    "version": "10.1.2",
+    "sha512": "5lyvmLy2g0sA8eZDD430gq7hhzrOcrMpB9A6vnKpq0f9076OAPxj44Pz77x46CuspYJStIgTI6RGisIh858G/Q=="
+  },
+  {
+    "id": "MediaWiz.Client",
+    "version": "14.0.0",
+    "sha512": "dNE6mlyUCjx3cDwrqYH/zsDRqDWMmjYJibjFLpUUbWUvZzodMAK2L3DNocwu/yGu1sKIcpEnWL1b2bns1EoUiQ=="
+  },
+  {
+    "id": "Skybrud.Essentials",
+    "version": "1.1.58",
+    "sha512": "stWhE9w8n5v79I+LUnbAF5gARxbF2vnk1jkjX7CZHhACbhY3eqi1f0Vlk0eb8YHFzp56mJcmFcrYMIppcfmRsg=="
+  },
+  {
+    "id": "Skybrud.Csv",
+    "version": "0.0.3",
+    "sha512": "G+bReGujcxn2c9VlOyyBgxsHV+58OCPfejfrbg1ICFzL2aZymbu7yWVNmFBCj4gMb8HWAyGC/0Wbiof3g/Ov3A=="
   }
 ]

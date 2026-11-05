@@ -8,7 +8,8 @@ namespace PackageCheck.Core.Facts;
 /// Options for one collection: whether nupkgs may be opened (H06-H09, H11), the projects using the package, and whether
 /// to ask the Marketplace (off for upgrade candidates, whose verdict the Marketplace never decides).
 /// </summary>
-public sealed record FactsOptions(bool Inspect, IReadOnlyList<string> ProjectDirectories, bool Marketplace = true);
+/// <param name="AssetDependencies">Inspect split UI dependencies (ruling R29); off for upgrade candidates to bound downloads.</param>
+public sealed record FactsOptions(bool Inspect, IReadOnlyList<string> ProjectDirectories, bool Marketplace = true, bool AssetDependencies = true);
 
 /// <summary>
 /// Everything the heuristics read about one (id, version) at one target. Heuristics are pure over this record; all I/O
@@ -22,6 +23,10 @@ public sealed record FactsOptions(bool Inspect, IReadOnlyList<string> ProjectDir
 /// <param name="MissingDependencies">Dependency ids the walk could not resolve on any feed; with no path found, absence of a path is unproven.</param>
 /// <param name="NoCompatibleGroup">The nuspec has dependency groups but none NuGet would pick for the target TFM: the version cannot be installed there.</param>
 /// <param name="DependencyIds">Direct dependency ids from the chosen group, as the nuspec spells them.</param>
+/// <param name="AssetDependencies">Direct dependencies with no path to the CMS that ship client assets or a manifest (ruling R29):
+/// a split "UI" package. Their legacy manifest is the package's own H08, and they count for server-only status.</param>
+/// <param name="ProjectAppPlugins">"App_Plugins/Name" folders found in the projects using the package (H17).</param>
+/// <param name="InspectionNotes">What inspection could not read (over a cap, props rejected, nupkg unavailable), shown as info evidence.</param>
 public sealed record PackageFacts(
     string Id,
     NuGetVersion Version,
@@ -38,14 +43,20 @@ public sealed record PackageFacts(
     IReadOnlyList<NuGetVersion>? ClearingVersions = null,
     DateTimeOffset? LatestPublished = null,
     IReadOnlyList<string>? MissingDependencies = null,
-    bool NoCompatibleGroup = false)
+    bool NoCompatibleGroup = false,
+    IReadOnlyList<InspectionResult>? AssetDependencies = null,
+    IReadOnlyList<string>? InspectionNotes = null,
+    IReadOnlyList<string>? ProjectAppPlugins = null)
 {
+    /// <summary>The package's own contents plus its asset-only dependencies (R29); empty when contents are unknown.</summary>
+    public IEnumerable<InspectionResult> OwnContents => Own is null ? [] : (AssetDependencies ?? []).Prepend(Own);
+
     public bool ContentsKnown => Own is not null;
 
     /// <summary>
     /// True only when contents are known and neither the package nor its inspected dependencies ship client assets, a
     /// manifest (new or legacy), a manifest reader or Management API references. H07/H09 are never discarded (ruling R31).
     /// </summary>
-    public bool IsServerOnly => Own is not null && Dependencies.Prepend(Own).All(c =>
+    public bool IsServerOnly => Own is not null && OwnContents.Concat(Dependencies).All(c =>
         !c.HasClientAssets && !c.HasUmbracoPackageJson && !c.HasLegacyManifest && !c.ReferencesManifestReader && !c.ReferencesManagementApi);
 }

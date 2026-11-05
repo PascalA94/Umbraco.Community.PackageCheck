@@ -3,4 +3,12 @@
     <!-- Libraries are bundled into the tool, never published on their own (design 7.1). -->
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../PackageCheck.Core/PackageCheck.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Every nupkg is hostile (design 4): a call that loads or extracts package content fails the build (RS0030). -->
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" PrivateAssets="all" />
+    <AdditionalFiles Include="BannedSymbols.txt" />
+  </ItemGroup>
 </Project>

@@ -11,5 +11,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/PackageCheck.Core/PackageCheck.Core.csproj" />
+    <!-- The inspection pipeline tests run the real inspector over synthetic nupkgs. -->
+    <ProjectReference Include="../../src/PackageCheck.Inspect/PackageCheck.Inspect.csproj" />
+    <Compile Include="../Support/NupkgBuilder.cs" LinkBase="Support" />
   </ItemGroup>
 </Project>

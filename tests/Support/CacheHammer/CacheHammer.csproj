@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Test helper for FileCacheTests.ParallelRuns_TwoProcesses_ShareCacheSafely only; never packed or shipped. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../src/PackageCheck.Sources/PackageCheck.Sources.csproj" />
+  </ItemGroup>
+</Project>

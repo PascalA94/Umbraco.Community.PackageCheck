@@ -158,3 +158,17 @@ public class MarketplaceClientBodyFailureTests
         public override int Read(byte[] buffer, int offset, int count) => throw new InvalidDataException("corrupt gzip");
     }
 }
+
+public class MarketplaceRecorderTests
+{
+    [Fact]
+    public void Recorder_KeepsOnlyClientFields_R33()
+    {
+        var body = """{"packageId":"X","isHQ":true,"readMeContent":"# hi","description":"free text","title":"T","isRetired":false}""";
+        var kept = FixtureHttpHandler.StripMarketplaceFreeText(new Uri("https://api.marketplace.umbraco.com/api/v1.0/packages/X"), body);
+        Assert.DoesNotContain("readMeContent", kept);
+        Assert.DoesNotContain("free text", kept);
+        Assert.Contains("\"isHQ\":true", kept);
+        Assert.Equal(body, FixtureHttpHandler.StripMarketplaceFreeText(new Uri("https://api.nuget.org/v3/index.json"), body));
+    }
+}

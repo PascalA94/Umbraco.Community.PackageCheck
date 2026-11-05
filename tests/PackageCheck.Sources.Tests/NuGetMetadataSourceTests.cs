@@ -536,4 +536,58 @@ public class NuGetMetadataSourceTests
         Assert.All(f.Handler.UserAgents, ua => Assert.Equal(
             $"umbraco-package-check/{ToolInfo.Version} (+https://github.com/PascalA94/Umbraco.Community.PackageCheck)", ua));
     }
+
+    // Security review M3 (S5): ids come from project files and feeds. An id that is not a valid NuGet id never reaches a
+    // path or URL: "../../x" or "/tmp/x" made VersionFolderPathResolver point outside the global packages folder.
+    [Theory]
+    [InlineData("../../../../tmp/evil")]
+    [InlineData("/tmp/evil")]
+    [InlineData("a b")]
+    public async Task InvalidId_IsRejected_WithoutIoOrHttp(string id)
+    {
+        using var f = new TestFeeds();
+        var site = f.WriteConfig("site", [("nuget.org", TestFeeds.NuGetOrg)]);
+        using var source = f.Source(site);
+        var v = NuGetVersion.Parse("1.0.0");
+        foreach (var call in new Func<Task>[]
+                 {
+                     () => source.GetVersionsAsync(id, Ct), () => source.GetDetailsAsync(id, v, Ct), () => source.OpenNupkgAsync(id, v, Ct),
+                 })
+        {
+            var ex = await Assert.ThrowsAsync<PackageCheck.Core.Facts.PackageSourceException>(call);
+            Assert.Equal(PackageCheck.Core.Model.UnknownReason.NotFound, ex.Reason);
+            Assert.DoesNotContain(id, ex.Message);
+        }
+        Assert.Equal(0, f.Handler.RequestCount);
+    }
+
+    [Fact]
+    public void DefaultTempFolder_IsPrivateAndPerRun() // security review M3 (S6)
+    {
+        var settings = global::NuGet.Configuration.Settings.LoadDefaultSettings(Path.GetTempPath());
+        var a = PackageCheck.Sources.NuGet.FeedSettings.FromSettings(settings, "/g", "/h");
+        var b = PackageCheck.Sources.NuGet.FeedSettings.FromSettings(settings, "/g", "/h");
+        Assert.NotEqual(a.TempFolder, b.TempFolder);
+        Assert.True(Directory.Exists(a.TempFolder));
+        if (!OperatingSystem.IsWindows())
+            Assert.Equal(UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute, File.GetUnixFileMode(a.TempFolder));
+        Directory.Delete(a.TempFolder);
+        Directory.Delete(b.TempFolder);
+    }
+
+    [Fact]
+    public async Task RegistrationForAnotherId_IsIgnored() // security review M3 (S5): the feed's id later builds paths
+    {
+        using var f = new TestFeeds();
+        // A real recorded registration (Umbraco.Community.Contentment) served as if it were Pkg's.
+        var recorded = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(Directory.GetFiles(TestFeeds.NuGetFixtures,
+            "api.nuget.org_v3_registration5-gz-semver2_umbraco.community.contentment_index.json_*.json").Single()))!;
+        var body = recorded["body"]!.GetValue<string>();
+        f.Handler.Route("https://api.nuget.org/v3/registration5-gz-semver2/pkg/index.json", HttpStatusCode.OK, body);
+        var site = f.WriteConfig("site", [("nuget.org", TestFeeds.NuGetOrg)]);
+        using var source = f.Source(site);
+        var ex = await Assert.ThrowsAsync<PackageSourceException>(() => source.GetVersionsAsync("Pkg", Ct));
+        Assert.Equal(UnknownReason.NotFound, ex.Reason);
+    }
 }
+

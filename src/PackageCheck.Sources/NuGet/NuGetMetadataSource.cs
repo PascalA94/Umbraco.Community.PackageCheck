@@ -46,6 +46,7 @@ public sealed class NuGetMetadataSource : IPackageMetadataSource, IDisposable
 
     public async Task<PackageVersions> GetVersionsAsync(string id, CancellationToken ct)
     {
+        ValidateId(id);
         var registration = await RegistrationAsync(id, ct);
         var versions = registration.Items.Select(m => m.Identity.Version).Distinct().Order().ToList();
         return new PackageVersions(id, versions);
@@ -53,6 +54,7 @@ public sealed class NuGetMetadataSource : IPackageMetadataSource, IDisposable
 
     public async Task<PackageDetails?> GetDetailsAsync(string id, NuGetVersion v, CancellationToken ct)
     {
+        ValidateId(id);
         var registration = await RegistrationAsync(id, ct);
         var item = registration.Items.FirstOrDefault(m => m.Identity.Version == v);
         if (item is null) return null;
@@ -73,10 +75,10 @@ public sealed class NuGetMetadataSource : IPackageMetadataSource, IDisposable
 
     public async Task<NupkgHandle?> OpenNupkgAsync(string id, NuGetVersion v, CancellationToken ct)
     {
+        ValidateId(id);
         // Design 7.5 step 1: a restored site already has most nupkgs; reading them costs no HTTP at all.
-        var local = new VersionFolderPathResolver(_feeds.GlobalPackagesFolder).GetPackageFilePath(id, v);
-        var info = new FileInfo(local);
-        if (info.Exists)
+        var info = GlobalPackagesFile(_feeds.GlobalPackagesFolder, id, v);
+        if (info is not null)
         {
             if (info.Length > _limits.MaxNupkgBytes) throw new NupkgTooLargeException(id, v, _limits.MaxNupkgBytes);
             return new NupkgHandle(info.FullName, IsTemporary: false, info.Length);
@@ -100,7 +102,9 @@ public sealed class NuGetMetadataSource : IPackageMetadataSource, IDisposable
             var meta = await repo.GetResourceAsync<PackageMetadataResource>(token);
             if (meta is null) return null; // a feed type without registration metadata cannot hold the answer
             using var cache = NewCacheContext();
-            var items = (await meta.GetMetadataAsync(id, includePrerelease: true, includeUnlisted: true, cache, NullLogger.Instance, token)).ToList();
+            // A feed answering for another id is ignored: the id later builds paths and URLs (security review M3, S5).
+            var items = (await meta.GetMetadataAsync(id, includePrerelease: true, includeUnlisted: true, cache, NullLogger.Instance, token))
+                .Where(m => string.Equals(m.Identity.Id, id, StringComparison.OrdinalIgnoreCase)).ToList();
             return items.Count == 0 ? null : items;
         }, throwWhenNotFound: true, ct);
         return new Registration(found!.Value.Feed, found.Value.Value);
@@ -147,8 +151,8 @@ public sealed class NuGetMetadataSource : IPackageMetadataSource, IDisposable
             return await finder.CopyNupkgToStreamAsync(id, v, destination, cache, NullLogger.Instance, ct);
         }
 
-        var lowerId = id.ToLowerInvariant();
-        var lowerVersion = v.ToNormalizedString().ToLowerInvariant();
+        var lowerId = Uri.EscapeDataString(id.ToLowerInvariant());
+        var lowerVersion = Uri.EscapeDataString(v.ToNormalizedString().ToLowerInvariant());
         var url = new Uri(baseUri.AbsoluteUri.TrimEnd('/') + $"/{lowerId}/{lowerVersion}/{lowerId}.{lowerVersion}.nupkg");
 
         using var invoker = new HttpMessageInvoker(_chain(repo.PackageSource), disposeHandler: true);
@@ -240,8 +244,36 @@ public sealed class NuGetMetadataSource : IPackageMetadataSource, IDisposable
         return null;
     }
 
+    /// <summary>
+    /// Security review M3 (S5): ids come from project files and feed JSON. Only valid NuGet ids reach a path or URL; the
+    /// id itself is left out of the message because it is untrusted text.
+    /// </summary>
+    public static void ValidateId(string id)
+    {
+        if (!PackageIdValidator.IsValidPackageId(id))
+            throw new PackageSourceException(UnknownReason.NotFound, "the package id is not a valid NuGet package id");
+    }
+
+    /// <summary>
+    /// The nupkg in a global packages folder, or null. The path must stay inside the folder and be a regular file: a
+    /// symlink or device could point anywhere (a FIFO would hang the hash).
+    /// </summary>
+    public static FileInfo? GlobalPackagesFile(string globalPackagesFolder, string id, NuGetVersion v)
+    {
+        var root = Path.GetFullPath(globalPackagesFolder).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
+        var path = Path.GetFullPath(new VersionFolderPathResolver(globalPackagesFolder).GetPackageFilePath(id, v));
+        if (!path.StartsWith(root, StringComparison.Ordinal)) return null;
+        var info = new FileInfo(path);
+        return info.Exists && info.LinkTarget is null && (info.Attributes & (FileAttributes.Device | FileAttributes.ReparsePoint)) == 0 ? info : null;
+    }
+
     public void Dispose()
     {
+        if (_feeds.OwnsTempFolder)
+        {
+            try { Directory.Delete(_feeds.TempFolder, recursive: true); }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
+        }
         if (_ownsNetwork) _network.Dispose();
     }
 

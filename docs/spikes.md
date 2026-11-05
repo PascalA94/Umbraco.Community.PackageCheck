@@ -550,3 +550,22 @@ Deviations from the plan or design made during the build. Same format as "M0 dec
 - **Decided:** the upgrade walk opens at most 3 candidate nupkgs per package (`UpgradeSelector.MaxInspections`), so a package whose contents disagree with its ranges cannot trigger a download per version. H19 (an HQ package whose ranges are all bounded and allow the target) is evidence only: row 7 stays `ok` medium, as design 7.4 says ("ok high needs H01 plus H07, H09 or H16"). A first build lifted row 7 to high for HQ packages; the M2 review flagged it as an unconfirmed truth-table change, so it was reverted.
 - **Why:** design 6.1 says "inspect only the chosen candidate"; the cap keeps that bounded when the first choice fails. The Marketplace's HQ flag is not independent evidence about a version's contents.
 - **Cost if wrong:** HQ packages scanned with `--no-inspect` show `ok` medium where high might be fair. Pascal can ask for the lift; it is one line in `TruthTable.cs`.
+
+### 2026-11-05: inspection scope and the M3 security fixes (Tasks 19-24, M3 review)
+
+- **Decided:**
+  - The inspector is target-independent and cacheable by content hash. It records a type scan per `lib/<tfm>/` folder (`LibScan`), and H09/H11 read only the folder NuGet would pick for the target (R23).
+  - R29 asset-only dependencies count for the package's own H08 and for server-only status, not for H07/H09. This keeps the confirmed MediaWiz.Forums golden (`ok` low).
+  - They are inspected only when they share the package's first id segment (Plumber.Workflow -> Plumber.Backoffice), and never inside upgrade-candidate walks.
+  - An upgrade whose recommended version could not be inspected (offline, over the cap, not on the feed) says so in its evidence and drops to `upgrade` medium.
+  - Feed URLs are shown as scheme, host and port only, and cache keys hold a SHA-256 of the feed URL. Tokens can sit in paths (Cloudsmith, MyGet).
+  - Package ids must be valid NuGet ids before any path or URL is built.
+  - Package-controlled text in evidence is escaped (control and format characters) and capped at 200 characters at the source.
+  - The central-directory size is checked before `ZipArchive` loads it.
+  - Downloads go to a per-run private temp folder.
+- **Why:**
+  - Without the narrowing, every library dependency was downloaded (SkiaSharp native assets 22 MB, ClosedXML, five Skybrud.Essentials versions) to learn that it has no backoffice.
+  - The security fixes come from the M3 security review: path tokens printed and cached, one hostile DLL or lib folder aborting the whole scan, 1.5 GB of memory from a forged central directory, and ids escaping the global packages folder.
+- **Cost if wrong:**
+  - A split UI package whose id prefix differs from the main package hides its legacy manifest (H08 missed).
+  - Messages name feeds less precisely, but the NuGet.config key is still shown.

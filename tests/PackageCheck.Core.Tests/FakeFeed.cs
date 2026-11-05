@@ -14,6 +14,9 @@ internal sealed class FakeFeed : IPackageMetadataSource
     public int DetailCalls { get; private set; }
     public HashSet<string> FailingIds { get; } = new(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>Ids whose details throw an unexpected (non-source) exception, as a library bug or hostile input might.</summary>
+    public HashSet<string> CrashingIds { get; } = new(StringComparer.OrdinalIgnoreCase);
+
     /// <summary>"Id/version" keys whose details fail with a source error, leaving the rest of the id working.</summary>
     public HashSet<string> FailingVersions { get; } = new(StringComparer.OrdinalIgnoreCase);
 
@@ -49,12 +52,31 @@ internal sealed class FakeFeed : IPackageMetadataSource
     public Task<PackageDetails?> GetDetailsAsync(string id, NuGetVersion v, CancellationToken ct)
     {
         DetailCalls++;
+        if (CrashingIds.Contains(id)) throw new InvalidOperationException("boom with package text \u001b[2J");
         if (FailingVersions.Contains($"{id}/{v.ToNormalizedString()}")) throw new PackageSourceException(UnknownReason.SourceError, "feed failed");
         if (FailingIds.Contains(id)) throw new PackageSourceException(UnknownReason.SourceError, "feed failed");
         if (!_packages.TryGetValue(id, out var versions)) throw new PackageSourceException(UnknownReason.NotFound, $"{id} not found");
         return Task.FromResult(versions.GetValueOrDefault(v));
     }
 
-    public Task<NupkgHandle?> OpenNupkgAsync(string id, NuGetVersion v, CancellationToken ct) =>
-        throw new NotSupportedException("metadata-only fake");
+    private readonly Dictionary<string, (string Path, bool Temporary)> _nupkgs = new(StringComparer.OrdinalIgnoreCase);
+    public List<string> OpenedNupkgs { get; } = [];
+    public HashSet<string> TooLarge { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Serves <paramref name="path"/> as the nupkg of id/version; <paramref name="temporary"/> mimics a download.</summary>
+    public FakeFeed WithNupkg(string id, string version, string path, bool temporary = false)
+    {
+        _nupkgs[$"{id}/{NuGetVersion.Parse(version).ToNormalizedString()}"] = (path, temporary);
+        return this;
+    }
+
+    public Task<NupkgHandle?> OpenNupkgAsync(string id, NuGetVersion v, CancellationToken ct)
+    {
+        var key = $"{id}/{v.ToNormalizedString()}";
+        OpenedNupkgs.Add(key);
+        if (TooLarge.Contains(key)) throw new NupkgTooLargeException(id, v, 1);
+        return Task.FromResult(_nupkgs.TryGetValue(key, out var n)
+            ? new NupkgHandle(n.Path, n.Temporary, new FileInfo(n.Path).Length)
+            : null);
+    }
 }

@@ -8,4 +8,10 @@
     <PackageReference Include="xunit.v3" />
     <Using Include="Xunit" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/PackageCheck.Inspect/PackageCheck.Inspect.csproj" />
+    <!-- Shared helpers live in tests/Support (ruling R14). -->
+    <Compile Include="../Support/NupkgBuilder.cs" LinkBase="Support" />
+    <None Include="../Support/StubAssemblies/*.dll" LinkBase="StubAssemblies" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

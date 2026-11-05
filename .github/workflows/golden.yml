@@ -1,0 +1,38 @@
+name: Golden
+
+# Real packages pinned by hash, judged over recorded HTTP (ruling R20): no live feed is called for metadata. Nupkgs are
+# downloaded once from nuget.org and checked against their pinned SHA-512, then kept in the Actions cache.
+# No schedule: the portfolio CI rules (README, "CI and GitHub rules") allow none; run it by hand after re-recording.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: golden-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  golden:
+    runs-on: ubuntu-latest
+    env:
+      GOLDEN_CACHE: ${{ github.workspace }}/.golden-cache
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        # The test projects target net8.0, so the 8 runtime is needed as well as the 10 SDK (review M3).
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .golden-cache
+          key: golden-nupkgs-${{ hashFiles('tests/PackageCheck.Golden.Tests/golden-packages.json') }}
+      - run: dotnet test --project tests/PackageCheck.Golden.Tests -c Release

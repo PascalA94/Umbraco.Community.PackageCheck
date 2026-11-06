@@ -2,7 +2,7 @@
 
 Thanks for helping. Issues and PRs are welcome; for anything larger than a fix, open an issue first so we can agree the approach.
 
-To add or correct what the tool says about one specific package, use the [umbraco-package-compat](https://github.com/PascalA94/umbraco-package-compat) repository instead. It holds the curated overrides.
+To add or correct what the tool says about one specific package, add an override: see [Overrides](#overrides) below.
 
 ## Branches
 
@@ -43,3 +43,43 @@ Use a site you are allowed to scan, or a throwaway one: a `.csproj` with a few p
 - Text from packages and feeds is escaped in every report format.
 - No static mutable state; services are composed in `ServiceRegistration`.
 - Comments explain why, not what.
+
+## Overrides
+
+`overrides/` holds the curated community overrides (CC0, see `overrides/LICENSE`). Every entry changes what the tool tells people about a package, so the rules are strict.
+
+### Governance
+
+- Changes by PR only. Every entry needs a public evidence link.
+- For `broken`, raise an issue on the package's repo first.
+- Authors can claim their file. Their `works` wins unless there's an open `broken` report with a repro.
+- Entries expire on `reviewBy` or at the package's next major.
+- Merging needs two maintainers: Pascal plus one community co-maintainer. Until a co-maintainer joins, there is only one, and PRs are merged after one approving review. If you'd like to help maintain the overrides, open an issue.
+
+### Adding or changing an entry
+
+1. One file per package: `overrides/<package-id-in-lower-case>.yml`.
+2. Fill in every field (see `schema/override.schema.json` and the example below). `evidence` must be a public `https` link with no user info: the issue you raised on the package's repo, a forum post or a reproduction. Private links, client names and screenshots of client sites are not accepted.
+3. Check it and refresh the snapshot bundled in the tool (needs the .NET 10 SDK), and commit both:
+
+   ```sh
+   dotnet run tools/compile.cs -- --check --seed data/overrides.seed.json
+   ```
+
+4. Open a PR. The `Overrides` workflow runs the same check and fails if the snapshot is out of date. After the merge it republishes the `overrides` release.
+
+```yaml
+id: Astroboard
+entries:
+  - packageVersions: "[1.0.0, )"     # NuGet range of the package versions this is about
+    umbraco: "[14.0.0, )"            # NuGet range of the Umbraco versions this is about
+    status: broken                   # works | broken | partial
+    summary: "Legacy AngularJS package.manifest only; does not load in the new backoffice"
+    evidence: https://github.com/<owner>/<repo>/issues/<n>
+    reportedBy: <github-handle>
+    verifiedOn: "2026-10-29"
+    reviewBy: "2027-10-29"           # optional; defaults to 12 months after verifiedOn
+    replacement: null                # optional package id
+```
+
+Quote the dates so YAML keeps them as text. The Umbraco majors table (`data/umbraco-versions.json`) is published with the overrides and follows the same PR rules.

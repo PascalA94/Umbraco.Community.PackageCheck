@@ -159,12 +159,12 @@ Feeds come from the nearest `NuGet.config` to each site, as `dotnet restore` wou
 
 ## Overrides
 
-Some packages declare support they don't have, or the other way round. Overrides record what people actually found, with a public link to the evidence. They come from the community repo [umbraco-package-compat](https://github.com/PascalA94/umbraco-package-compat): the tool downloads its latest release, checks it against the release's sha256 (this catches a truncated or mixed-up download; it is not a signature), and caches it for 24 hours. If that fails, it uses the cached copy, then the snapshot bundled in the tool, with a warning; it never fails the run.
+Some packages declare support they don't have, or the other way round. Overrides record what people actually found, with a public link to the evidence. They live in this repo's [`overrides/`](https://github.com/PascalA94/Umbraco.Community.PackageCheck/tree/main/overrides) folder (CC0). Every merge to `main` republishes them to the [`overrides` release](https://github.com/PascalA94/Umbraco.Community.PackageCheck/releases/tag/overrides), so a fix reaches users without a new tool version. The tool downloads that release, checks it against the release's sha256 (this catches a truncated or mixed-up download; it is not a signature), and caches it for 24 hours. If that fails, it uses the cached copy, then the snapshot bundled in the tool, with a warning; it never fails the run.
 
 - An override **replaces** the verdict, and is always labelled and linked. The computed verdict is kept beside it (`override.computedVerdict` in JSON, "computed: …" in the console and markdown), so nothing is hidden.
 - Statuses: `works` gives `ok`; `broken` ("reported not working") gives `no-release`, or `upgrade` when another version isn't covered; `partial` gives `suspicious` with the summary.
 - `--overrides <file|url>` adds your own entries (YAML or JSON, same format, https URLs only). Yours win over the community's for the same package and ranges, and are labelled "local override".
-- To add or correct an entry, open a PR on [umbraco-package-compat](https://github.com/PascalA94/umbraco-package-compat); its CONTRIBUTING.md has the rules. Every entry needs a public evidence link.
+- To add or correct an entry, open a PR that adds or edits `overrides/<package-id-in-lower-case>.yml`. The rules are in [CONTRIBUTING.md](https://github.com/PascalA94/Umbraco.Community.PackageCheck/blob/main/.github/CONTRIBUTING.md#overrides). Every entry needs a public evidence link.
 
 ## Safety
 
@@ -188,4 +188,4 @@ Some packages declare support they don't have, or the other way round. Overrides
 
 Bugs and ideas: [GitHub issues](https://github.com/PascalA94/Umbraco.Community.PackageCheck/issues). Security issues: use [private vulnerability reporting](https://github.com/PascalA94/Umbraco.Community.PackageCheck/security/advisories/new), not a public issue. Building from source needs the .NET 10 SDK; see [CONTRIBUTING.md](https://github.com/PascalA94/Umbraco.Community.PackageCheck/blob/main/.github/CONTRIBUTING.md).
 
-Licence: [MIT](https://github.com/PascalA94/Umbraco.Community.PackageCheck/blob/main/LICENSE). The community overrides data is CC0.
+Licence: [MIT](https://github.com/PascalA94/Umbraco.Community.PackageCheck/blob/main/LICENSE). The community overrides in `overrides/` are [CC0](https://github.com/PascalA94/Umbraco.Community.PackageCheck/blob/main/overrides/LICENSE).

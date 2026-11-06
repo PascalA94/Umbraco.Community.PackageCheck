@@ -58,6 +58,15 @@ public sealed class CommunityOverrideSourceTests : IDisposable
     private static IEnumerable<string> Ids(IEnumerable<OverrideEntry> entries) => entries.Select(e => e.Id).Order(StringComparer.OrdinalIgnoreCase);
 
     [Fact]
+    public void DefaultRelease_IsThisRepositorysOverridesRelease()
+    {
+        // The overrides moved into the tool repo (Pascal, 2026-11-06); a fixed "overrides" tag, never "latest", which
+        // is the newest tool release and carries no overrides asset.
+        Assert.Equal("https://github.com/PascalA94/Umbraco.Community.PackageCheck/releases/download/overrides/",
+            CommunityOverrideSource.DefaultReleaseBase.ToString());
+    }
+
+    [Fact]
     public async Task VerifiedAsset_IsUsed_AndCached()
     {
         Serve(Asset());

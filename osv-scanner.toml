@@ -1,0 +1,9 @@
+# osv-scanner (CI job in ci.yml). The tool itself never references Umbraco.Cms: those references live only in the
+# synthetic site fixtures under tests/Support (old, floating and property versions on purpose), which osv-scanner reads
+# as if they were dependencies. The tool's real dependencies are still scanned, and the vulnerable-packages job audits
+# the restored graph independently.
+[[PackageOverrides]]
+name = "Umbraco.Cms"
+ecosystem = "NuGet"
+ignore = true
+reason = "Test fixtures only (tests/Support/RepoFixtures); not a dependency of the tool"

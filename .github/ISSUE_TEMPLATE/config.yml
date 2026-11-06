@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/PascalA94/Umbraco.Community.PackageCheck/security/advisories/new
     about: Please report security issues privately, not as a public issue.
   - name: Add or correct a compatibility override
-    url: https://github.com/PascalA94/umbraco-package-compat
-    about: Overrides for specific packages live in the umbraco-package-compat repository.
+    url: https://github.com/PascalA94/Umbraco.Community.PackageCheck/blob/main/.github/CONTRIBUTING.md#overrides
+    about: Overrides for specific packages are added by PR to overrides/; the contributing guide has the rules.

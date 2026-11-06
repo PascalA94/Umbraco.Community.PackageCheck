@@ -11,10 +11,11 @@ using PackageCheck.Sources.Data;
 namespace PackageCheck.Sources.Overrides;
 
 /// <summary>
-/// The community overrides release from <c>umbraco-package-compat</c> (design 7.8): <c>overrides.json</c> plus its
-/// <c>.sha256</c>, cached for 24 h. The hash comes from the same release, so it catches a truncated or mismatched
-/// download, not a forged release; it is not a signature (security review M1). Overrides are always labelled and keep the
-/// computed verdict beside them, and the majors table is only taken when it looks sane. Any failure (network, HTTP status, hash mismatch, bad content) falls back
+/// The community overrides release (design 7.8), compiled from this repo's <c>overrides/</c> folder by the overrides
+/// workflow on every merge to main: <c>overrides.json</c> plus its <c>.sha256</c>, cached for 24 h. The hash comes from
+/// the same release, so it catches a truncated or mismatched download, not a forged release; it is not a signature
+/// (security review M1). Overrides are always labelled and keep the computed verdict beside them, and the majors table is
+/// only taken when it looks sane. Any failure (network, HTTP status, hash mismatch, bad content) falls back
 /// to the cached release, then to the snapshot bundled in the tool, with one warning. It never fails the run and never
 /// makes it incomplete (design 7.3). The same asset carries the Umbraco majors table, which replaces the bundled one
 /// when its <c>checked</c> date is newer. One fetch serves both.
@@ -22,10 +23,11 @@ namespace PackageCheck.Sources.Overrides;
 public sealed class CommunityOverrideSource : IOverrideSource, IUmbracoVersionsSource
 {
     /// <summary>
-    /// GitHub's "latest release" download path redirects to the newest asset without the REST API, so CI runners that
-    /// share an IP do not hit the API's unauthenticated rate limit.
+    /// A fixed <c>overrides</c> release in this repo, updated in place (Pascal, 2026-11-06: no separate data repo). Not
+    /// <c>latest</c>, which is the newest tool release. The download path needs no REST API, so CI runners that share an
+    /// IP do not hit the API's unauthenticated rate limit.
     /// </summary>
-    public static readonly Uri DefaultReleaseBase = new("https://github.com/PascalA94/umbraco-package-compat/releases/latest/download/");
+    public static readonly Uri DefaultReleaseBase = new("https://github.com/PascalA94/Umbraco.Community.PackageCheck/releases/download/overrides/");
 
     public static readonly TimeSpan MaxAge = TimeSpan.FromHours(24);
     private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(30);

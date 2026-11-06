@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/PascalA94/umbraco-package-compat/main/schema/override.schema.json",
+  "title": "Umbraco package compatibility override (one package)",
+  "description": "One file per package in overrides/<package-id-lowercase>.yml. NuGet range syntax and the file-name rule are checked by tools/compile.cs, which uses the same parser as Umbraco.Community.PackageCheck.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "entries"],
+  "properties": {
+    "id": {
+      "description": "The NuGet package id as the author publishes it. Compared case-insensitively.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]{0,99}$"
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "$defs": {
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["packageVersions", "umbraco", "status", "summary", "evidence", "reportedBy", "verifiedOn"],
+      "properties": {
+        "packageVersions": { "description": "NuGet version range of the package this entry is about.", "type": "string", "minLength": 1 },
+        "umbraco": { "description": "NuGet version range of the Umbraco versions this entry is about.", "type": "string", "minLength": 1 },
+        "status": { "enum": ["works", "broken", "partial"] },
+        "summary": { "type": "string", "minLength": 10, "maxLength": 300 },
+        "evidence": {
+          "description": "A public https link: an issue on the package's repo, a forum post or a reproduction.",
+          "type": "string",
+          "pattern": "^https://[^\\s/@\\u0000-\\u001f\\u007f]+/[^\\s\\u0000-\\u001f\\u007f]*$",
+          "maxLength": 500
+        },
+        "reportedBy": { "description": "GitHub handle, without the @.", "type": "string", "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$" },
+        "verifiedOn": { "$ref": "#/$defs/date" },
+        "reviewBy": { "description": "Shown as stale after this date. Defaults to 12 months after verifiedOn.", "$ref": "#/$defs/date" },
+        "replacement": {
+          "description": "Optional package id that replaces this one.",
+          "type": ["string", "null"],
+          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]{0,99}$"
+        }
+      }
+    }
+  }
+}

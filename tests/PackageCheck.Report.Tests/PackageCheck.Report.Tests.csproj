@@ -14,4 +14,8 @@
   <ItemGroup>
     <ProjectReference Include="../../src/PackageCheck.Report/PackageCheck.Report.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Approved snapshots are read from the output, since CI builds map source paths away (Snapshot.cs). -->
+    <None Include="Snapshots/*.verified.*" CopyToOutputDirectory="PreserveNewest" LinkBase="Snapshots" />
+  </ItemGroup>
 </Project>

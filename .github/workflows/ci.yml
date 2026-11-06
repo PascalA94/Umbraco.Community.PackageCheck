@@ -50,12 +50,17 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # The repo has no lock files yet, so tolerate "nothing to scan" rather than fail.
+      # The repo has no lock files yet, so tolerate "nothing to scan" rather than fail. Central package management
+      # without lock files hides the tool's own versions from osv-scanner; the vulnerable-packages job and the build's
+      # NuGet audit cover those. The synthetic site fixtures (old Umbraco versions, malformed files on purpose) are
+      # excluded: they are test input, not dependencies.
       - uses: google/osv-scanner-action/osv-scanner-action@b1d267aea5211fa648d9d442fa64b90dbdcbdd36 # v2.7.0
         with:
           scan-args: |-
             --recursive
             --allow-no-lockfiles
+            --config=./osv-scanner.toml
+            --x-exclude=g:**/RepoFixtures
             ./
 
   vulnerable-packages:

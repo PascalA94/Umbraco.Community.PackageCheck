@@ -1,0 +1,70 @@
+name: Overrides
+
+# Community overrides (design 7.8) live in overrides/. Every PR that touches them is validated; every merge to main
+# republishes overrides.json and its sha256 to the fixed "overrides" release, which the tool downloads.
+on:
+  pull_request:
+    paths: &paths
+      - 'overrides/**'
+      - 'schema/override.schema.json'
+      - 'tools/compile.cs'
+      - 'tools/Directory.Build.props'
+      - 'data/**'
+      - '.github/workflows/overrides.yml'
+  push:
+    branches: [main]
+    paths: *paths
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Publishes replace assets in place; never let two runs interleave their uploads.
+concurrency:
+  group: overrides-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet run tools/compile.cs -- --check --seed data/overrides.seed.json
+      # The snapshot bundled in the tool must be the compiled overrides, so offline runs see the same entries.
+      - name: Bundled snapshot is in sync
+        run: git diff --exit-code -- data/overrides.seed.json || { echo "::error::run 'dotnet run tools/compile.cs -- --seed data/overrides.seed.json' and commit the result"; exit 1; }
+
+  publish:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    # The only job that writes: it replaces the assets on the "overrides" release.
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet run tools/compile.cs -- --out dist
+      - run: cd dist && sha256sum -c overrides.json.sha256
+      # A prerelease that is never "Latest", so it can't hide the newest tool release.
+      - name: Publish to the overrides release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view overrides --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload overrides dist/overrides.json dist/overrides.json.sha256 --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create overrides dist/overrides.json dist/overrides.json.sha256 --prerelease --latest=false \
+              --target "$GITHUB_SHA" --title "Community overrides" \
+              --notes "Compiled from overrides/ on every merge to main. The tool downloads these two files; see README, Overrides." \
+              --repo "$GITHUB_REPOSITORY"
+          fi

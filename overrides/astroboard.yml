@@ -1,0 +1,11 @@
+id: astroboard
+entries:
+  - packageVersions: "[1.0.0, )"
+    umbraco: "[14.0.0, )"
+    status: broken
+    summary: "Legacy AngularJS package.manifest only; does not load in the new backoffice"
+    evidence: https://forum.umbraco.com/t/packages-supporting-u17-when-they-do-not/7933/8
+    reportedBy: PascalA94
+    verifiedOn: "2026-11-05"
+    reviewBy: "2027-11-05"
+    replacement: null

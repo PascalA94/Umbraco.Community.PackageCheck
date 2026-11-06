@@ -5,7 +5,7 @@ All notable changes to Umbraco Package Check are listed here. The format follows
 ## [0.1.0] - unreleased
 
 ### Added
-- Community overrides from the `umbraco-package-compat` release: downloaded, checked against its sha256, cached for 24 hours, with the cached copy and then the bundled snapshot as fallbacks. It never fails a run. The release's Umbraco majors table replaces the bundled one when it is newer.
+- Community overrides in `overrides/` (CC0), republished to this repo's `overrides` release on every merge to `main`: the tool downloads them, checks the sha256, caches them for 24 hours, with the cached copy and then the bundled snapshot as fallbacks. It never fails a run. The release's Umbraco majors table replaces the bundled one when it is newer.
 - `--msbuild`: exact resolved versions, and the transitive graph with `--transitive`, from `dotnet list package` (needs a prior restore; never restores). Falls back to reading project files with a warning.
 - README, `HEURISTICS.md`, issue templates, contributing and security notes, screenshots and `umbraco-marketplace.json`.
 

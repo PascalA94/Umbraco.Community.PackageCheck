@@ -12,7 +12,7 @@
     <PackageReference Include="YamlDotNet" />
   </ItemGroup>
   <ItemGroup>
-    <!-- The bundled data snapshot (design 7.8); one copy in data/ at the repo root, which M5 moves to umbraco-package-compat. -->
+    <!-- The bundled data snapshot (design 7.8): data/ at the repo root. overrides.seed.json is generated from overrides/ by tools/compile.cs (its seed option), and CI checks it is in sync. -->
     <EmbeddedResource Include="../../data/umbraco-versions.json" LogicalName="PackageCheck.Data.umbraco-versions.json" />
     <EmbeddedResource Include="../../data/overrides.seed.json" LogicalName="PackageCheck.Data.overrides.seed.json" />
   </ItemGroup>

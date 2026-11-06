@@ -1,0 +1,4 @@
+<Project>
+  <!-- tools/compile.cs is a standalone file-based app with its own #:package pins; this empty file stops the repo's
+       Directory.Build.props (net8.0, central package versions, SourceLink) from being imported into it. -->
+</Project>

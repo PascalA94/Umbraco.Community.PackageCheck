@@ -11,9 +11,13 @@ internal static class Snapshot
 {
     public static void Match(string actual, string extension, [CallerFilePath] string sourceFile = "", [CallerMemberName] string test = "")
     {
-        var dir = Path.Combine(Path.GetDirectoryName(sourceFile)!, "Snapshots");
+        // CI builds map source paths to "/_" (ContinuousIntegrationBuild), so the approved files are read from the copy
+        // in the test output; a received file goes beside the source when that folder exists, else beside the copy.
+        var sourceDir = Path.Combine(Path.GetDirectoryName(sourceFile)!, "Snapshots");
+        var outputDir = Path.Combine(AppContext.BaseDirectory, "Snapshots");
+        var dir = Directory.Exists(sourceDir) ? sourceDir : outputDir;
         var stem = $"{Path.GetFileNameWithoutExtension(sourceFile)}.{test}";
-        var verified = Path.Combine(dir, $"{stem}.verified.{extension}");
+        var verified = Path.Combine(outputDir, $"{stem}.verified.{extension}");
         var received = Path.Combine(dir, $"{stem}.received.{extension}");
         var normalised = actual.Replace("\r\n", "\n", StringComparison.Ordinal);
 
@@ -27,6 +31,6 @@ internal static class Snapshot
         File.WriteAllText(received, normalised);
         Assert.Fail(File.Exists(verified)
             ? $"Snapshot differs: compare {received} with {verified}"
-            : $"No approved snapshot: review {received} and rename it to {Path.GetFileName(verified)}");
+            : $"No approved snapshot: review {received} and rename it to {Path.GetFileName(verified)} under Snapshots/");
     }
 }

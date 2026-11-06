@@ -71,9 +71,10 @@ public static class OverrideFileParser
         if (status is null) { problem = "status must be works, broken or partial"; return null; }
         if (string.IsNullOrWhiteSpace(e.Summary)) { problem = "summary is required"; return null; }
         // Governance (design 7.8): every entry needs a public evidence link, and only https is shown as a link.
-        if (!Uri.TryCreate(e.Evidence, UriKind.Absolute, out var evidence) || evidence.Scheme != Uri.UriSchemeHttps)
+        // Userinfo is refused: https://github.com@evil.example/ would read as a GitHub link (security review M5-L4).
+        if (!Uri.TryCreate(e.Evidence, UriKind.Absolute, out var evidence) || evidence.Scheme != Uri.UriSchemeHttps || evidence.UserInfo.Length > 0)
         {
-            problem = "evidence must be an absolute https URL";
+            problem = "evidence must be an absolute https URL without user info";
             return null;
         }
         if (!TryDate(e.VerifiedOn, out var verifiedOn)) { problem = "verifiedOn must be a yyyy-MM-dd date"; return null; }

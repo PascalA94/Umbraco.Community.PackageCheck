@@ -25,6 +25,52 @@ public class UpgradeSelectorTests
     }
 
     [Fact]
+    public async Task PrefersMajorThatFitsTargetTfm()
+    {
+        var all = V("13.2.6", "14.2.2", "14.2.3", "17.6.0", "17.6.1", "18.3.0");
+        var clears = Clears("14.2.2", "14.2.3", "17.6.0", "17.6.1");
+        var c = await UpgradeSelector.SelectAsync(NuGetVersion.Parse("13.2.6"), all, clears, clears, false, [Clears("17.6.0", "17.6.1", "18.3.0")]);
+        Assert.Equal(NuGetVersion.Parse("17.6.1"), c.Recommended);
+    }
+
+    [Fact]
+    public async Task EarlierPreferenceWins_ThenLaterOnes()
+    {
+        var all = V("13.2.6", "14.2.3", "17.6.1", "18.3.0");
+        var clears = Clears("14.2.3", "17.6.1", "18.3.0");
+        var c = await UpgradeSelector.SelectAsync(NuGetVersion.Parse("13.2.6"), all, clears, clears, false,
+            [Clears("18.3.0"), Clears("17.6.1", "18.3.0")]);
+        Assert.Equal(NuGetVersion.Parse("18.3.0"), c.Recommended);
+
+        var second = await UpgradeSelector.SelectAsync(NuGetVersion.Parse("13.2.6"), all, clears, clears, false,
+            [Clears(), Clears("17.6.1", "18.3.0")]);
+        Assert.Equal(NuGetVersion.Parse("17.6.1"), second.Recommended);
+    }
+
+    [Fact]
+    public async Task FailedPreferredVersions_AreNotInspectedTwice_PlainRuleStillRuns()
+    {
+        // Final review F1: 7.x is preferred but its contents fail; each version must cost one inspection, not one per
+        // pass, so the plain pass still reaches 6.1.0 instead of ending in no-release.
+        var all = V("5.0.0", "6.1.0", "7.2.1", "7.2.2");
+        var inspected = new List<NuGetVersion>();
+        Task<bool> Full(NuGetVersion v) { inspected.Add(v); return Task.FromResult(v == NuGetVersion.Parse("6.1.0")); }
+        var c = await UpgradeSelector.SelectAsync(NuGetVersion.Parse("5.0.0"), all, Clears("6.1.0", "7.2.1", "7.2.2"), Full, false,
+            [Clears("7.2.1", "7.2.2"), Clears("7.2.1", "7.2.2")]);
+        Assert.Equal(NuGetVersion.Parse("6.1.0"), c.Recommended);
+        Assert.Equal(inspected.Count, inspected.Distinct().Count());
+    }
+
+    [Fact]
+    public async Task NothingFitsTargetTfm_FallsBackToLowestClearingMajor()
+    {
+        var all = V("13.2.6", "14.2.3", "15.0.0");
+        var clears = Clears("14.2.3", "15.0.0");
+        var c = await UpgradeSelector.SelectAsync(NuGetVersion.Parse("13.2.6"), all, clears, clears, false, [Clears(), Clears()]);
+        Assert.Equal(NuGetVersion.Parse("14.2.3"), c.Recommended);
+    }
+
+    [Fact]
     public async Task HighestCompatible_IsNull_WhenItIsTheRecommendation()
     {
         var c = await UpgradeSelector.SelectAsync(NuGetVersion.Parse("1.0.0"), V("1.0.0", "2.0.0", "3.0.0"), Clears("2.0.0"), Clears("2.0.0"), false);

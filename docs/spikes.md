@@ -611,3 +611,35 @@ All optional, so `schemaVersion` stays 1 (design 7.6): top-level `warnings[]` (s
 - Markdown writes `@` as `&#64;` so a pasted report never mentions anyone; valid emoji and other astral characters are kept.
 - `explain` exits 3 only when a source failed; an offline miss or an unknown id exits 2.
 - `release.yml` publishes only a tag whose commit is on `main`.
+
+### 2026-11-06: upgrades prefer a major built for the target's TFM (Task 35 exercise, Pascal)
+- **Decided:** the upgrade pick first looks only at package majors whose highest clearing version passes H06 (it has a `lib/` folder or dependency group for the target major's own TFM, net10.0 for 17). If none does, the design 6.1 rule applies unchanged (lowest clearing major, highest version in it). No truth-table row changes; current-version verdicts and the confirmed goldens are unchanged.
+- **Why:** a fake Umbraco 13 site with public packages, targeting 17, was told "move uSync 13.2.6 to 14.2.3" at high confidence. uSync 14.2.3 declares an open range (`>= 14.2.0`) and a v14 `umbraco-package.json`, so row 6 says it clears 17, and the lowest-major rule preferred it over 17.6.1, which is built for net10.0. It now recommends 17.6.1.
+- **Cost if wrong:** a package whose older major really does run on the target is recommended at a later major (a longer move, not a broken one). One parameter in `UpgradeSelector`.
+- **Status:** chosen by Pascal, 2026-11-06.
+
+### 2026-11-06: upgrades prefer a major whose range starts in the target's major (Task 35 exercise, Pascal)
+- **Decided:** a second, earlier preference tier: majors whose highest clearing version has every Umbraco range starting in the target's major (`>= 18.0.0` or `[18.0.0, 19.0.0)` for 18). Order: floor tier, then TFM tier, then the design 6.1 rule. The golden `Umbraco.Community.Contentment 5.2.1 @ 18.3.0` changes from 6.1.4 (highest overall 7.2.2) to 7.2.2; its R25 caveat (6.1.x's `[17.0.0, 19.0.0)` looks over-broad) is resolved this way. Other goldens are unchanged.
+- **Why:** at 18.3.0, uSync 13.2.6 was told to move to 17.6.1: uSync 17 declares `>= 17.0.0` and shares net10.0 with 18, so the TFM tier could not separate it from 18.x.
+- **Cost if wrong:** where an older major really supports the target (a package built once for 17 and 18), users are sent to a later major than needed. One list entry in `VerdictEngine`.
+- **Status:** chosen by Pascal, 2026-11-06. Supersedes the 2026-11-05 confirmation of the 6.1.4 golden.
+
+### 2026-11-06: release-candidate exercise (Task 35)
+Stands in for the plan's `docs/exercise.md`. A local pack (`0.1.0-rc.local.4`), not the published rc.1, which needs Pascal's publishing setup. Sites: public repos cloned (depth 1) into a temp folder and deleted afterwards (`prjseal/Clean` on Umbraco 18.0.1, `leekelleher/umbraco-contentment`'s 18.x test site, `umbraco/OurUmbraco` on Umbraco 7), plus a fake Umbraco 13.10.0 site with public packages. `git status --porcelain` was empty before and after every run; nothing was restored or built in them.
+
+| Run | Result |
+|---|---|
+| `scan Clean.sln --target current` | exit 0; 18.0.1; 3 ok |
+| `scan Clean.sln --target 18.3.0 --format json` | exit 0; JSON valid against `schema/report.schema.json` |
+| `scan Clean.sln --target next-major --prerelease --verbose` | exit 0; 19.0.0-beta1 (net11.0, prerelease) |
+| 3 sites `--target 18.3.0 --format md` | exit 0; matrix of 3 sites, 9 s on a cold cache |
+| `scan OurUmbraco` (Umbraco 7) | exit 2, "no Umbraco project found" |
+| `scan Clean.sln OurUmbraco` | exit 0; OurUmbraco skipped with the warning |
+| missing path; `--target 99` | exit 2 both, clear messages |
+| fake site `--target 17 --fail-on suspicious` | exit 1 |
+| same, network blocked, empty cache | exit 3, 6 unknown, incomplete |
+| same, `--offline` after a warm run, network blocked | exit 1, same verdicts as online |
+
+Against what the real 13-to-17 upgrades chose (design section 9): Skybrud.Umbraco.Redirects 17.0.5 matches; Umbraco.Forms 17.6.2 and uSync 17.6.1 are the 17.x lines. Two disagreements were fixed with tests (the two upgrade-preference decisions above: uSync was sent to 14.2.3 at 17 and to 17.6.1 at 18). One message was improved: scanning the `Clean` repo folder picks its root `template-pack.sln` (folder rule: `.slnx`, then `.sln`), which has no Umbraco project; the error now names the file it read.
+
+Not verified here: the published rc.1 from nuget.org (Pascal's rehearsal), the SDK 9 and SDK-8-only runs (CI install matrix), `--msbuild` on a restored Umbraco site (verified on a restored scratch project only, since scanned repos are never restored), and private feeds.

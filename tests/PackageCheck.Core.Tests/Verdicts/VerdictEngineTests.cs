@@ -50,10 +50,12 @@ public class VerdictEngineTests
     }
 
     [Fact]
-    public async Task Contentment521_Target1830_PicksLowestClearingMajor()
+    public async Task Contentment521_Target1830_PrefersMajorWhoseFloorIsTheTarget()
     {
+        // 6.1.x's [17.0.0, 19.0.0) clears 18 but was built for 17 (the R25 caveat); 7.x declares [18.0.0, 19.0.0).
+        // Pascal, 2026-11-06: a major whose range starts in the target's major is preferred.
         var v = await Judge(Contentment(), "Umbraco.Community.Contentment", "5.2.1", "18.3.0");
-        Assert.Equal((Verdict.Upgrade, "6.1.4", "7.2.2"), (v.Verdict, v.Recommended, v.HighestCompatible));
+        Assert.Equal((Verdict.Upgrade, "7.2.2", (string?)null), (v.Verdict, v.Recommended, v.HighestCompatible));
     }
 
     [Fact]
@@ -80,6 +82,40 @@ public class VerdictEngineTests
     {
         var v = await Judge(SkybrudImport(), "Skybrud.Umbraco.Redirects.Import", "13.0.1", "17.7.2", Metadata with { AllowPrerelease = true });
         Assert.Equal((Verdict.Upgrade, "17.0.0-beta001", (string?)null), (v.Verdict, v.Recommended, v.PrereleaseCompatible));
+    }
+
+    // uSync's real shape (Task 35 exercise, 2026-11-06): 14.x declares an open range and ships only net8.0, so it lands
+    // on a clearing row for 17; the version built for 17 must win (Pascal, 2026-11-06).
+    private static FakeFeed USyncShape() => new FakeFeed()
+        .Add("P", "13.2.6", [("net8.0", ["Umbraco.Cms.Core [13.0.0, 14.0.0)"])])
+        .Add("P", "14.2.3", [("net8.0", ["Umbraco.Cms.Core 14.2.0"])])
+        .Add("P", "17.6.1", [("net10.0", ["Umbraco.Cms.Core 17.0.0"])])
+        .Add("P", "18.3.0", [("net10.0", ["Umbraco.Cms.Core 18.0.0"])]);
+
+    [Fact]
+    public async Task Upgrade_PrefersVersionBuiltForTargetTfm()
+    {
+        var v = await Judge(USyncShape(), "P", "13.2.6", "17.7.2");
+        Assert.Equal((Verdict.Upgrade, "17.6.1"), (v.Verdict, v.Recommended));
+    }
+
+    [Fact]
+    public async Task Upgrade_PrefersMajorWhoseFloorIsTheTargetMajor()
+    {
+        // uSync 17 declares >= 17.0.0 and shares net10.0 with 18, so only the floor separates it from 18.x.
+        var v = await Judge(USyncShape(), "P", "13.2.6", "18.3.0");
+        Assert.Equal((Verdict.Upgrade, "18.3.0"), (v.Verdict, v.Recommended));
+    }
+
+    [Fact]
+    public async Task Upgrade_NoVersionBuiltForTargetTfm_KeepsLowestClearingMajor()
+    {
+        var feed = new FakeFeed()
+            .Add("P", "13.2.6", [("net8.0", ["Umbraco.Cms.Core [13.0.0, 14.0.0)"])])
+            .Add("P", "14.2.3", [("net8.0", ["Umbraco.Cms.Core 14.2.0"])])
+            .Add("P", "15.0.0", [("net9.0", ["Umbraco.Cms.Core 15.0.0"])]);
+        var v = await Judge(feed, "P", "13.2.6", "17.7.2");
+        Assert.Equal((Verdict.Upgrade, "14.2.3"), (v.Verdict, v.Recommended));
     }
 
     [Fact]

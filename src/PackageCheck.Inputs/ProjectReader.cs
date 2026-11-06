@@ -12,13 +12,12 @@ public interface IProjectReader
 /// Turns a path into a <see cref="ScanInput"/>: finds the entry point, reads every project, overlays lock files and
 /// applies the site rules (design 6.1). Warnings from every reader are kept as raw text; escaping is an output concern.
 /// </summary>
-public sealed class ProjectReader : IProjectReader
+public sealed class ProjectReader(MsBuildListRunner? msbuild = null) : IProjectReader
 {
     private const string LockFileName = "packages.lock.json";
 
-    public Task<ScanInput> ReadAsync(string path, InputOptions o, CancellationToken ct)
+    public async Task<ScanInput> ReadAsync(string path, InputOptions o, CancellationToken ct)
     {
-        // Readers are synchronous file IO over a handful of small files; Task keeps the seam open for MSBuild later.
         ct.ThrowIfCancellationRequested();
         var entry = FolderDiscovery.FindEntry(path);
         var warnings = new List<string>();
@@ -43,17 +42,82 @@ public sealed class ProjectReader : IProjectReader
                 break;
         }
 
-        var projects = new List<ProjectInfo>();
-        var anyLock = false;
+        var fromFiles = new List<ProjectInfo>();
         foreach (var csproj in projectPaths)
         {
             ct.ThrowIfCancellationRequested();
             var (info, projectWarnings) = ProjectFileReader.ReadSafe(csproj, o.StopAt);
             warnings.AddRange(projectWarnings);
-            if (info is null)
+            if (info is not null)
             {
-                continue;
+                fromFiles.Add(info);
             }
+        }
+
+        var fromMsBuild = o.UseMsBuild && msbuild is not null && fromFiles.Count > 0
+            ? await TryMsBuildAsync(fromFiles, o.Transitive, warnings, ct)
+            : null;
+        var (projects, status) = fromMsBuild is not null
+            ? (fromMsBuild, o.Transitive ? TransitiveStatus.FromMsBuild : TransitiveStatus.NotRequested)
+            : ApplyLockFiles(fromFiles, o, warnings);
+
+        var input = new ScanInput(sitePath, projects, warnings, status);
+        if (input.SiteUmbracoVersion is null)
+        {
+            // A folder that resolved to a solution or project file names it (folder rule: .slnx, then .sln, then *.csproj).
+            var resolvedFile = entry.Kind is EntryKind.Slnx or EntryKind.Sln or EntryKind.Csproj
+                               && !string.Equals(Path.GetFullPath(entry.Path), Path.GetFullPath(path), StringComparison.Ordinal);
+            throw new NoUmbracoProjectException(path, resolvedFile ? entry.Path : null);
+        }
+
+        var majors = projects.Select(p => p.UmbracoVersion).Where(v => v is not null)
+            .Select(v => v!.Major).Distinct().Order().ToList();
+        if (majors.Count > 1)
+        {
+            warnings.Add($"mixed Umbraco majors: {string.Join(", ", majors)}; using the highest");
+        }
+
+        return input;
+    }
+
+    /// <summary>
+    /// <c>--msbuild</c>: every project's exact versions from <c>dotnet list package</c>. All or nothing: if any project
+    /// fails, the whole site falls back to file reading with one warning, so a site never mixes the two sources.
+    /// </summary>
+    private async Task<List<ProjectInfo>?> TryMsBuildAsync(List<ProjectInfo> fromFiles, bool transitive, List<string> warnings, CancellationToken ct)
+    {
+        var result = new List<ProjectInfo>();
+        foreach (var info in fromFiles)
+        {
+            IReadOnlyList<PackageRef> refs;
+            try
+            {
+                refs = await msbuild!.ListAsync(info.Path, transitive, ct);
+            }
+            catch (MsBuildListException e)
+            {
+                warnings.Add($"--msbuild: {e.Message} for {Path.GetFileName(info.Path)}; run dotnet restore first. Reading project files instead");
+                return null;
+            }
+
+            var exact = refs.Where(r => r.Direct).GroupBy(r => r.Id, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+            var packages = info.Packages
+                .Select(p => exact.TryGetValue(p.Id, out var r) ? p with { Version = r.Version, UnresolvedReason = null } : p)
+                .ToList();
+            var resolved = info with { Packages = packages, UmbracoVersion = PackageRefs.UmbracoVersionOf(packages) };
+            result.Add(transitive ? AppendTransitive(resolved, refs) : resolved);
+        }
+        return result;
+    }
+
+    private static (List<ProjectInfo>, TransitiveStatus) ApplyLockFiles(List<ProjectInfo> fromFiles, InputOptions o, List<string> warnings)
+    {
+        var projects = new List<ProjectInfo>();
+        var anyLock = false;
+        foreach (var file in fromFiles)
+        {
+            var info = file;
 
             var lockPath = Path.Combine(Path.GetDirectoryName(info.Path)!, LockFileName);
             // The first target framework stands in for the project: a lock file is per TFM and the rules judge one.
@@ -77,21 +141,7 @@ public sealed class ProjectReader : IProjectReader
         {
             warnings.Add($"transitive packages unavailable: no {LockFileName} found next to a project");
         }
-
-        var input = new ScanInput(sitePath, projects, warnings, status);
-        if (input.SiteUmbracoVersion is null)
-        {
-            throw new NoUmbracoProjectException(path);
-        }
-
-        var majors = projects.Select(p => p.UmbracoVersion).Where(v => v is not null)
-            .Select(v => v!.Major).Distinct().Order().ToList();
-        if (majors.Count > 1)
-        {
-            warnings.Add($"mixed Umbraco majors: {string.Join(", ", majors)}; using the highest");
-        }
-
-        return Task.FromResult(input);
+        return (projects, status);
     }
 
     private static ProjectInfo AppendTransitive(ProjectInfo project, IReadOnlyList<PackageRef> lockRefs)

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using PackageCheck.Sources.Overrides;
 using Spectre.Console;
 
 namespace PackageCheck.Cli;
@@ -22,4 +23,7 @@ public sealed record CliEnvironment(
 
     /// <summary>Where relative paths resolve and whose NuGet.config <c>explain</c> uses.</summary>
     public string WorkingDirectory { get; init; } = Environment.CurrentDirectory;
+
+    /// <summary>Where the community overrides release is downloaded from (design 7.8). Null uses only the bundled snapshot.</summary>
+    public Uri? CommunityOverridesRelease { get; init; } = CommunityOverrideSource.DefaultReleaseBase;
 }

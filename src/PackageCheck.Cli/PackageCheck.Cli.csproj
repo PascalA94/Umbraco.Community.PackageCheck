@@ -7,7 +7,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <RollForward>Major</RollForward>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageTags>umbraco upgrade compatibility dotnet-tool cli</PackageTags>
+    <PackageTags>umbraco umbraco-marketplace umbracopackage dotnet upgrade compatibility audit dotnet-tool cli</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
     <Description>A dotnet tool that reports which NuGet packages on an Umbraco site are ready for a target Umbraco version, with the evidence for each verdict. Reports only; never changes the site.</Description>

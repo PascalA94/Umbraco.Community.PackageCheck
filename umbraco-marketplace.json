@@ -1,0 +1,25 @@
+{
+  "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
+  "Category": "Developer Tools",
+  "PackageType": "Package",
+  "LicenseTypes": ["Free"],
+  "AuthorDetails": {
+    "Name": "Pascal Meyer",
+    "Url": "https://github.com/PascalA94",
+    "ImageUrl": "https://github.com/PascalA94.png",
+    "SyncContributorsFromRepository": true
+  },
+  "DocumentationUrl": "https://github.com/PascalA94/Umbraco.Community.PackageCheck#readme",
+  "IssueTrackerUrl": "https://github.com/PascalA94/Umbraco.Community.PackageCheck/issues",
+  "Tags": ["upgrade", "compatibility", "dotnet-tool", "cli", "audit"],
+  "Screenshots": [
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/PascalA94/Umbraco.Community.PackageCheck/main/assets/screenshots/scan.png",
+      "Caption": "Scanning a demo Umbraco 13 site for an upgrade to 17"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/PascalA94/Umbraco.Community.PackageCheck/main/assets/screenshots/explain.png",
+      "Caption": "explain shows every piece of evidence behind a verdict"
+    }
+  ]
+}

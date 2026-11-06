@@ -21,7 +21,7 @@ public static class ScanCommand
         var prerelease = new Option<bool>("--prerelease") { Description = "allow prerelease versions as an upgrade target" };
         var noInspect = new Option<bool>("--no-inspect") { Description = "metadata only; no nupkg download or inspection" };
         var offline = new Option<bool>("--offline") { Description = "cache, global packages folder and bundled data only" };
-        var overrides = new Option<string?>("--overrides") { Description = "extra overrides file or URL on top of the bundled ones" };
+        var overrides = new Option<string?>("--overrides") { Description = "extra overrides file or URL on top of the community ones" };
         var privateIds = new Option<string?>("--private-ids") { Description = "file of package ids on a private feed; never looked up" };
         var cacheDir = new Option<string?>("--cache-dir") { Description = "cache folder" };
         var maxAge = new Option<string>("--max-age") { DefaultValueFactory = _ => "6h", Description = "how long feed metadata is cached: 30m, 6h, 1d" };

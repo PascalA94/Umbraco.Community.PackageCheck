@@ -26,6 +26,20 @@ public class ProjectReaderTests
     }
 
     [Fact]
+    public async Task FolderWhoseFirstSolutionHasNoUmbraco_MessageNamesTheSolution()
+    {
+        // The Clean starter kit's shape (Task 35): a root pack solution, with the real site in a subfolder.
+        var root = Directory.CreateTempSubdirectory("pc-pack-sln-").FullName;
+        File.WriteAllText(Path.Combine(root, "pack.csproj"), "<Project Sdk=\"Microsoft.NET.Sdk\"><PropertyGroup><TargetFramework>net10.0</TargetFramework></PropertyGroup></Project>");
+        File.WriteAllText(Path.Combine(root, "pack.sln"), "Microsoft Visual Studio Solution File, Format Version 12.00\nProject(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"pack\", \"pack.csproj\", \"{FA48594E-06C1-F95E-AFBC-F3254E0AC43B}\"\nEndProject\n");
+
+        var ex = await Assert.ThrowsAsync<NoUmbracoProjectException>(() =>
+            new ProjectReader().ReadAsync(root, new InputOptions(false, false, root), CancellationToken.None));
+
+        Assert.Equal($"no Umbraco project found in {root} (read pack.sln; pass the site's solution or project file instead)", ex.Message);
+    }
+
+    [Fact]
     public async Task MissingPath_ThrowsPathNotFoundException() =>
         await Assert.ThrowsAsync<PathNotFoundException>(() => Read("does-not-exist"));
 

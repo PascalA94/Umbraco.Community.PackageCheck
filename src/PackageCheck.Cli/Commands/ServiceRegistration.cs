@@ -35,8 +35,9 @@ public static class ServiceRegistration
         services.AddSingleton(env.Clock);
         services.AddSingleton(new HttpPolicy(env.Clock));
         services.AddSingleton<RunWarnings>();
+        services.AddSingleton<IProcessRunner, DotnetProcessRunner>();
+        services.AddSingleton<MsBuildListRunner>();
         services.AddSingleton<IProjectReader, ProjectReader>();
-        services.AddSingleton<IUmbracoVersionsSource, BundledUmbracoVersionsSource>();
 
         FileCache? cache = req.NoCache ? null : new FileCache(cacheRoot, env.Clock);
         // With --no-cache, NuGet's own HTTP cache goes inside the run's temp folder, deleted with it (review M4 F8).
@@ -60,9 +61,14 @@ public static class ServiceRegistration
             INupkgInspector i = new NupkgInspector(ArchiveLimits.Default);
             return cache is null ? i : new CachingInspector(i, cache);
         });
+        // One instance serves the overrides and the majors table from the same verified release (Task 32).
+        services.AddSingleton(sp => new CommunityOverrideSource(sp.GetRequiredService<HttpClient>(), cache,
+            env.CommunityOverridesRelease, req.Offline, sp.GetRequiredService<RunWarnings>().Add, env.Clock));
+        services.AddSingleton<IUmbracoVersionsSource>(sp => sp.GetRequiredService<CommunityOverrideSource>());
         services.AddSingleton<IOverrideSource>(sp =>
         {
-            var sources = new List<IOverrideSource> { new BundledOverrideSource() };
+            // Order matters: a later source wins for the same id and ranges, so local overrides beat community ones.
+            var sources = new List<IOverrideSource> { sp.GetRequiredService<CommunityOverrideSource>() };
             if (req.OverridesPath is { } path)
                 sources.Add(new LocalOverrideSource(path, sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<RunWarnings>().Add));
             return new CompositeOverrideSource(sources);

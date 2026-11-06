@@ -9,6 +9,11 @@
     <!-- One version for every bundled assembly, so ToolInfo (in Core, ruling R15) reports the tool's version. -->
     <Version>0.0.1-alpha</Version>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- Audit transitive packages too: the tool ships them. With TreatWarningsAsErrors any advisory fails the build;
+         NU1900 (the audit source could not be reached) stays a warning so offline builds still work. -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1900</WarningsNotAsErrors>
     <Authors>Pascal Meyer</Authors>
     <Copyright>Copyright (c) 2026 Pascal Meyer</Copyright>
     <RepositoryType>git</RepositoryType>

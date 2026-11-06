@@ -23,6 +23,7 @@ public sealed class VerdictEngine(FactsCollector facts, OverrideSet overrides, T
 {
     private readonly IReadOnlyList<IHeuristic> _heuristics = heuristics ?? HeuristicSet.All(null);
     private readonly H15PrereleaseOnly _h15 = new();
+    private readonly H06TfmFit _h06 = new();
 
     public async Task<PackageVerdict> EvaluateAsync(SitePackage pkg, TargetVersion target, ScanOptions o, CancellationToken ct)
     {
@@ -110,7 +111,25 @@ public sealed class VerdictEngine(FactsCollector facts, OverrideSet overrides, T
                 }
             }
 
-            return await UpgradeSelector.SelectAsync(f.Version, f.AllVersions, MetadataClears, FullyClears, o.AllowPrerelease);
+            // H06 on the candidate's metadata (or contents, if already read): no H06 evidence means nothing is known,
+            // which counts as a fit so a package without TFM data is never pushed to a later major.
+            async Task<bool> FitsTargetTfm(NuGetVersion v)
+            {
+                var cf = await CandidateAsync(f.Id, v, target, candidates, ct);
+                return cf is null || !_h06.Evaluate(cf, target).Any(e => e.Result == EvidenceResult.Negative);
+            }
+
+            // Every Umbraco range starts in the target's own major: the release made for it (uSync 18.x '>= 18.0.0',
+            // Contentment 7.x '[18.0.0, 19.0.0)'), not an older major whose range happens to reach it.
+            async Task<bool> FloorInTargetMajor(NuGetVersion v)
+            {
+                var cf = await CandidateAsync(f.Id, v, target, candidates, ct);
+                return cf is { Umbraco.Count: > 0 }
+                       && cf.Umbraco.All(u => u.Range.MinVersion is { } min && min.Major == target.RangeVersion.Major);
+            }
+
+            return await UpgradeSelector.SelectAsync(f.Version, f.AllVersions, MetadataClears, FullyClears, o.AllowPrerelease,
+                [FloorInTargetMajor, FitsTargetTfm]);
         }
 
         if (table.Row == 1)

@@ -48,6 +48,8 @@ public class OverrideFileParserTests
     [InlineData("http://example.com/issue/1")]
     [InlineData("/relative/path")]
     [InlineData("javascript:alert(1)")]
+    [InlineData("https://github.com@evil.example/x")] // security review L4: userinfo makes a link look like another host
+    [InlineData("https://user:pass@example.com/x")]
     [InlineData("")]
     public void Parse_NonHttpsEvidence_Rejected(string evidence)
     {

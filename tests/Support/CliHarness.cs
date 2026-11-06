@@ -14,7 +14,14 @@ public static class CliHarness
     public static async Task<CliResult> RunWithAsync(HttpMessageHandler? handler, string? cacheRoot, Action<IServiceCollection>? configure, params string[] args) =>
         await RunInAsync(null, handler, cacheRoot, configure, args);
 
-    public static async Task<CliResult> RunInAsync(string? workingDirectory, HttpMessageHandler? handler, string? cacheRoot, Action<IServiceCollection>? configure, params string[] args)
+    public static async Task<CliResult> RunInAsync(string? workingDirectory, HttpMessageHandler? handler, string? cacheRoot, Action<IServiceCollection>? configure, params string[] args) =>
+        await RunCoreAsync(workingDirectory, handler, cacheRoot, configure, null, args);
+
+    /// <summary>Opts in to the community overrides release at <paramref name="release"/>; other runs use only the bundled snapshot.</summary>
+    public static async Task<CliResult> RunWithReleaseAsync(HttpMessageHandler handler, Uri release, string? cacheRoot, params string[] args) =>
+        await RunCoreAsync(null, handler, cacheRoot, null, release, args);
+
+    private static async Task<CliResult> RunCoreAsync(string? workingDirectory, HttpMessageHandler? handler, string? cacheRoot, Action<IServiceCollection>? configure, Uri? release, string[] args)
     {
         var stdout = new StringWriter();
         var stderr = new StringWriter();
@@ -25,6 +32,8 @@ public static class CliHarness
             ConfigureServices = configure,
             GetEnvironmentVariable = _ => null,
             WorkingDirectory = workingDirectory ?? Directory.CreateTempSubdirectory("pc-cli-cwd-").FullName,
+            // Recorded runs never reach GitHub: the community release is off unless a test opts in.
+            CommunityOverridesRelease = release,
         };
         var code = await CliApp.RunAsync(args, env);
         return new CliResult(code, stdout.ToString(), stderr.ToString(), console.Output);

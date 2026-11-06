@@ -1,0 +1,49 @@
+name: Bug report
+description: A wrong verdict, a crash or anything else that doesn't work
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Please don't paste client package lists, private feed URLs or tokens. A public package id and version is enough for a wrong verdict.
+  - type: input
+    id: tool-version
+    attributes:
+      label: PackageCheck version
+      description: Output of `umbraco-package-check --version`
+    validations:
+      required: true
+  - type: input
+    id: sdk
+    attributes:
+      label: .NET SDK and OS
+      description: Output of `dotnet --version`, and your OS
+    validations:
+      required: true
+  - type: input
+    id: umbraco
+    attributes:
+      label: Site's Umbraco version and the target
+      description: For example "13.10.0, --target 17"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Command and steps
+      description: The exact command, and the public package id and version involved if it is a verdict problem
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: For a verdict, `umbraco-package-check explain <id> <version> --target <v>` output helps most
+    validations:
+      required: true

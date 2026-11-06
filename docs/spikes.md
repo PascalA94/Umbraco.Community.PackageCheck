@@ -610,7 +610,7 @@ All optional, so `schemaVersion` stays 1 (design 7.6): top-level `warnings[]` (s
 - stderr text is stripped of control characters and URL userinfo. Ctrl+C exits 130.
 - Markdown writes `@` as `&#64;` so a pasted report never mentions anyone; valid emoji and other astral characters are kept.
 - `explain` exits 3 only when a source failed; an offline miss or an unknown id exits 2.
-- `release.yml` publishes only a tag whose commit is on `main`.
+- `release.yml` (renamed `publish.yml` on 2026-11-06, to match the other packages) publishes only a tag whose commit is on `main`.
 
 ### 2026-11-06: upgrades prefer a major built for the target's TFM (Task 35 exercise, Pascal)
 - **Decided:** the upgrade pick first looks only at package majors whose highest clearing version passes H06 (it has a `lib/` folder or dependency group for the target major's own TFM, net10.0 for 17). If none does, the design 6.1 rule applies unchanged (lowest clearing major, highest version in it). No truth-table row changes; current-version verdicts and the confirmed goldens are unchanged.

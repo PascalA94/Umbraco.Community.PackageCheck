@@ -1,4 +1,4 @@
-name: Release
+name: Publish
 
 # Runs on a version tag (v0.1.0-rc.1, v0.1.0). Builds, tests, packs with the tag's version, pushes to nuget.org with
 # trusted publishing (a short-lived key from GitHub OIDC, so no long-lived key is stored) and creates the GitHub release,

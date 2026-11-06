@@ -1,0 +1,18 @@
+version: 2
+# No routine version-update PRs (open-pull-requests-limit: 0); security updates stay on through the repo setting.
+# Dev-tool majors are upgraded by hand, in their own PR.
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    # Synthetic Umbraco sites used as test input pin old or broken versions on purpose; bumping them breaks the tests.
+    exclude-paths:
+      - "tests/Support/**"
+      - "spikes/**"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0

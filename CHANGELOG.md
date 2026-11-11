@@ -2,6 +2,13 @@
 
 All notable changes to Umbraco Package Check are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-11-11
+
+Documentation only. No code changes.
+
+### Changed
+- README and screenshots: re-captured at 1400px with the full command line and no empty space, added a CI screenshot (`--fail-on` exit code and JSON counts), moved the `explain` screenshot next to Verdicts, and rewrote the image alt text and captions.
+
 ## [0.1.0] - 2026-11-06
 
 First release.

@@ -15,11 +15,15 @@
   "Screenshots": [
     {
       "ImageUrl": "https://raw.githubusercontent.com/PascalA94/Umbraco.Community.PackageCheck/main/assets/screenshots/scan.png",
-      "Caption": "Scanning a demo Umbraco 13 site for an upgrade to 17"
+      "Caption": "Scanning a demo Umbraco 13 site for an upgrade to 17: what to upgrade, replace or remove"
     },
     {
       "ImageUrl": "https://raw.githubusercontent.com/PascalA94/Umbraco.Community.PackageCheck/main/assets/screenshots/explain.png",
-      "Caption": "explain shows every piece of evidence behind a verdict"
+      "Caption": "explain shows the evidence behind the verdict for one package"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/PascalA94/Umbraco.Community.PackageCheck/main/assets/screenshots/ci.png",
+      "Caption": "In CI, --fail-on exits 1 when packages need attention; the JSON report carries the counts"
     }
   ]
 }

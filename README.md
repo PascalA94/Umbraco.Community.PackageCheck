@@ -10,7 +10,7 @@ A community package, not made or supported by Umbraco HQ.
 
 **Requires** the .NET 8 SDK or later (it runs on 8, 9 and 10). It checks any site whose projects reference `Umbraco.Cms`.
 
-![PackageCheck scanning a demo site for Umbraco 17](https://raw.githubusercontent.com/PascalA94/Umbraco.Community.PackageCheck/main/assets/screenshots/scan.png)
+![Terminal output of umbraco-package-check scanning a demo Umbraco 13 site for an upgrade to 17: one package with no release, four to upgrade or replace, and the top actions](https://raw.githubusercontent.com/PascalA94/Umbraco.Community.PackageCheck/main/assets/screenshots/scan.png)
 
 ## Why
 
@@ -120,7 +120,15 @@ The tool says **suspicious** and shows why. It never claims on its own that a pa
 
 [HEURISTICS.md](https://github.com/PascalA94/Umbraco.Community.PackageCheck/blob/main/HEURISTICS.md) lists every check (H01 to H19), its weight and the truth table that turns evidence into a verdict.
 
+`explain` prints the evidence behind one package's verdict, here the legacy-manifest finding for Astroboard 1.1.3 against Umbraco 17. It is not tied to a site, so the Projects column is empty.
+
+![Terminal output of explain Astroboard 1.1.3 --target 17, listing the heuristics H01 to H18 that led to a no-release verdict](https://raw.githubusercontent.com/PascalA94/Umbraco.Community.PackageCheck/main/assets/screenshots/explain.png)
+
 ## CI: `--fail-on` and exit codes
+
+In CI, `--fail-on upgrade` exits 1 when any package needs an upgrade or replacement, and the JSON report carries the counts.
+
+![Terminal showing a scan with --fail-on upgrade exiting with code 1, followed by the summary counts from the JSON report](https://raw.githubusercontent.com/PascalA94/Umbraco.Community.PackageCheck/main/assets/screenshots/ci.png)
 
 Severity, worst first: `no-release` > `upgrade` (and `replaced`) > `suspicious`. The thresholds nest: `--fail-on suspicious` fails on `suspicious`, `upgrade`, `replaced` and `no-release`. `unknown` never fails a run on its own.
 
@@ -181,8 +189,6 @@ Some packages declare support they don't have, or the other way round. Overrides
 - A split UI package is only inspected when its id shares the main package's first segment (for example `Plumber.Workflow` and `Plumber.Backoffice`). A UI package with an unrelated prefix can hide a legacy manifest.
 - A package that implements `IPackageManifestReader` but never registers it still counts as new-backoffice ready.
 - Precision and recall haven't been measured on real upgrades yet. Until they are, use `--fail-on` to flag packages for a human, and don't block releases on `suspicious` alone.
-
-![explain shows every piece of evidence behind a verdict](https://raw.githubusercontent.com/PascalA94/Umbraco.Community.PackageCheck/main/assets/screenshots/explain.png)
 
 ## Contributing and support
 

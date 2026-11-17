@@ -1,5 +1,5 @@
 {
-  "checked": "2026-11-05",
+  "checked": "2026-11-17",
   "source": "https://umbraco.com/products/knowledge-center/long-term-support-and-end-of-life/",
   "majors": [
     { "major": 13, "lts": true,  "eol": "2026-12-14", "tfm": "net8.0", "released": "2023-12-14" },
@@ -7,6 +7,7 @@
     { "major": 15, "lts": false, "eol": "2025-11-14", "tfm": "net9.0", "released": "2024-11-14" },
     { "major": 16, "lts": false, "eol": "2026-06-12", "tfm": "net9.0", "released": "2025-06-12" },
     { "major": 17, "lts": true,  "eol": "2028-11-27", "tfm": "net10.0", "released": "2025-11-27" },
-    { "major": 18, "lts": false, "eol": "2027-06-25", "tfm": "net10.0", "released": "2026-06-25" }
+    { "major": 18, "lts": false, "eol": "2027-06-25", "tfm": "net10.0", "released": "2026-06-25" },
+    { "major": 19, "lts": false, "eol": null,         "tfm": "net11.0", "released": null }
   ]
 }

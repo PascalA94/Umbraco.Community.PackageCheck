@@ -202,9 +202,9 @@ static JsonNode? ReadVersionsTable(string path, List<string> errs)
         var ok = m?["major"] is JsonValue mv && mv.TryGetValue<int>(out var major) && major > 0
             && m["lts"] is JsonValue lv && lv.TryGetValue<bool>(out _)
             && m["tfm"] is JsonValue tv && tv.TryGetValue<string>(out var tfm) && tfm.StartsWith("net", StringComparison.Ordinal)
-            && m["eol"] is JsonValue ev && ev.TryGetValue<string>(out var eol)
-            && DateOnly.TryParseExact(eol, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _);
-        if (!ok) { errs.Add($"{name}: every major needs major (int), lts (bool), eol (yyyy-MM-dd) and tfm (netX.Y): {m?.ToJsonString()}"); continue; }
+            && (m["eol"] is null || (m["eol"] is JsonValue ev && ev.TryGetValue<string>(out var eol)
+                && DateOnly.TryParseExact(eol, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _)));
+        if (!ok) { errs.Add($"{name}: every major needs major (int), lts (bool), eol (yyyy-MM-dd or null) and tfm (netX.Y): {m?.ToJsonString()}"); continue; }
         if (!seen.Add(m!["major"]!.GetValue<int>())) errs.Add($"{name}: major {m["major"]} listed twice");
     }
     return doc;

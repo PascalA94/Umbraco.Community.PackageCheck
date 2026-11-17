@@ -128,7 +128,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: [8.0.x, 9.0.x, 10.0.x]
+        sdk: [8.0.x, 9.0.x, 10.0.x, 11.0.x]
     steps:
       # No checkout: only the one SDK is installed, and nothing from the repo (global.json) is in the way.
       - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0

@@ -113,7 +113,7 @@ public class VerdictEngineTests
         var feed = new FakeFeed()
             .Add("P", "13.2.6", [("net8.0", ["Umbraco.Cms.Core [13.0.0, 14.0.0)"])])
             .Add("P", "14.2.3", [("net8.0", ["Umbraco.Cms.Core 14.2.0"])])
-            .Add("P", "15.0.0", [("net9.0", ["Umbraco.Cms.Core 15.0.0"])]);
+            .Add("P", "15.0.0", [("net8.0", ["Umbraco.Cms.Core 15.0.0"])]);
         var v = await Judge(feed, "P", "13.2.6", "17.7.2");
         Assert.Equal((Verdict.Upgrade, "14.2.3"), (v.Verdict, v.Recommended));
     }

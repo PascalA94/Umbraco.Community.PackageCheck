@@ -13,7 +13,7 @@ Source of truth: `src/PackageCheck.Core/Heuristics/` and `src/PackageCheck.Core/
 | H03 | An open range starts below 14 while the target is 14 or later (a range with no floor counts as below 14) | NuGet metadata | Built | negative, low |
 | H04 | No direct `Umbraco.Cms.*` dependency: walk the dependencies, up to depth 3, and use the ranges found there | NuGet metadata | Built | info (H01 and H02 use what it finds) |
 | H05 | Depends on a core package removed with the new backoffice (`Umbraco.Cms.Web.BackOffice`) | NuGet metadata | Built | negative, high |
-| H06 | No `lib/` folder (or, without inspection, dependency group) for the target major's own TFM, for example net10.0 for 17 | nupkg or NuGet metadata | Built | negative, low; decides row 9 and the upgrade preference |
+| H06 | No `lib/` folder (or, without inspection, dependency group) fit for the target's TFM: compatible per NuGet and at most one .NET release behind, for example net10.0 or net9.0 for 17 but not net8.0; netstandard libs always fit | nupkg or NuGet metadata | Built | negative, low; decides row 9 and the upgrade preference |
 | H07 | `staticwebassets/**/umbraco-package.json` in the package or one of its Umbraco dependencies | nupkg | Built | positive, high |
 | H08 | Legacy `package.manifest` only (no H07 or H09 in the package itself) | nupkg | Built | negative, high |
 | H09 | A type in the target-TFM `lib/` assembly of the package or an Umbraco dependency implements `Umbraco.Cms.Infrastructure.Manifest.IPackageManifestReader` | nupkg (metadata reader, no load) | Built | positive, high |

@@ -2,6 +2,17 @@
 
 All notable changes to Umbraco Package Check are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-11-17
+
+### Added
+- Umbraco 19 in the versions table (`--target 19` resolves offline to net11.0). Release date and end of life are empty until Umbraco ships 19.0.0.
+
+### Changed
+- H06 (TFM fit) uses NuGet framework compatibility with a one-release floor, so a net10.0 lib fits a net11.0 target.
+- H06 now counts a `netstandard` lib as a fit at every target (NuGet rules, no floor). Before, a netstandard-only package failed H06.
+- `eol` in the versions table may be empty.
+- CI: the install matrix also runs on the .NET 11 SDK, and `global.json` rolls forward to the latest major SDK.
+
 ## [0.1.1] - 2026-11-11
 
 Documentation only. No code changes.

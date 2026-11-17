@@ -8,7 +8,7 @@ namespace PackageCheck.Core.Targets;
 /// One row of <c>umbraco-versions.json</c> (design 7.8). <paramref name="Eol"/> is the end-of-life date;
 /// <paramref name="Released"/> (an addition for H18) is the major's first release, null when not yet released.
 /// </summary>
-public sealed record UmbracoMajor(int Major, bool Lts, DateOnly Eol, string Tfm, DateOnly? Released = null);
+public sealed record UmbracoMajor(int Major, bool Lts, DateOnly? Eol, string Tfm, DateOnly? Released = null);
 
 /// <summary>The bundled or released Umbraco majors table. It feeds <c>latest-lts</c> and the offline TFM fallback.</summary>
 public sealed class UmbracoVersionsTable(IReadOnlyList<UmbracoMajor> majors)
@@ -17,7 +17,7 @@ public sealed class UmbracoVersionsTable(IReadOnlyList<UmbracoMajor> majors)
 
     /// <summary>The highest LTS major still inside its support window on <paramref name="today"/>.</summary>
     public int LatestLtsMajor(DateOnly today) =>
-        Majors.Where(m => m.Lts && m.Eol >= today).Select(m => (int?)m.Major).Max()
+        Majors.Where(m => m.Lts && m.Eol is { } eol && eol >= today).Select(m => (int?)m.Major).Max()
         ?? throw new UsageException("no supported LTS major in umbraco-versions.json; pass a major or an exact version");
 
     public UmbracoMajor? Find(int major) => Majors.FirstOrDefault(m => m.Major == major);
@@ -41,7 +41,7 @@ public sealed class UmbracoVersionsTable(IReadOnlyList<UmbracoMajor> majors)
 
     private sealed record VersionsDocument([property: JsonPropertyName("majors")] List<MajorRow>? Majors);
 
-    private sealed record MajorRow(int Major, bool Lts, DateOnly Eol, string? Tfm, DateOnly? Released);
+    private sealed record MajorRow(int Major, bool Lts, DateOnly? Eol, string? Tfm, DateOnly? Released);
 }
 
 /// <summary>Where the majors table comes from: the bundled seed in 0.1, the overrides release from Task 32 (ruling R13).</summary>

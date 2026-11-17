@@ -8,7 +8,7 @@ A dotnet tool that tells you, before you upgrade an Umbraco site, which of its N
 
 A community package, not made or supported by Umbraco HQ.
 
-**Requires** the .NET 8 SDK or later (it runs on 8, 9 and 10). It checks any site whose projects reference `Umbraco.Cms`.
+**Requires** the .NET 8 SDK or later (it runs on 8, 9, 10 and 11). It checks any site whose projects reference `Umbraco.Cms`.
 
 ![Terminal output of umbraco-package-check scanning a demo Umbraco 13 site for an upgrade to 17: one package with no release, four to upgrade or replace, and the top actions](https://raw.githubusercontent.com/PascalA94/Umbraco.Community.PackageCheck/main/assets/screenshots/scan.png)
 

@@ -167,7 +167,7 @@ public sealed class CommunityOverrideSource : IOverrideSource, IUmbracoVersionsS
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(obj.ToJsonString()));
             var table = UmbracoVersionsTable.Parse(stream);
             if (bundled.Table.Majors.Any(m => table.Find(m.Major) is null)) return bundled.Table;
-            if (!table.Majors.Any(m => m.Lts && m.Eol >= today)) return bundled.Table;
+            if (!table.Majors.Any(m => m.Lts && m.Eol is { } eol && eol >= today)) return bundled.Table;
             return table;
         }
         catch (Exception e) when (e is JsonException or InvalidDataException or FormatException)

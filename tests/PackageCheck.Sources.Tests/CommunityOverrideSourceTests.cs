@@ -20,7 +20,7 @@ public sealed class CommunityOverrideSourceTests : IDisposable
 
     public void Dispose() => Directory.Delete(_root, recursive: true);
 
-    private const string VersionsWith19 = """
+    private const string VersionsWith20 = """
         { "checked": "2026-12-01", "majors": [
           { "major": 13, "lts": true, "eol": "2026-12-14", "tfm": "net8.0" },
           { "major": 14, "lts": false, "eol": "2025-05-30", "tfm": "net8.0" },
@@ -28,7 +28,8 @@ public sealed class CommunityOverrideSourceTests : IDisposable
           { "major": 16, "lts": false, "eol": "2026-06-12", "tfm": "net9.0" },
           { "major": 17, "lts": true, "eol": "2028-11-27", "tfm": "net10.0" },
           { "major": 18, "lts": false, "eol": "2027-06-25", "tfm": "net10.0" },
-          { "major": 19, "lts": false, "eol": "2028-12-01", "tfm": "net11.0" } ] }
+          { "major": 19, "lts": false, "eol": null, "tfm": "net11.0" },
+          { "major": 20, "lts": false, "eol": "2028-12-01", "tfm": "net11.0" } ] }
         """;
 
     private static string Asset(string id = "Community.Only", string status = "partial", string? versions = null) => $$"""
@@ -180,18 +181,18 @@ public sealed class CommunityOverrideSourceTests : IDisposable
     [Fact]
     public async Task NewerVersionsTable_ReplacesEmbedded()
     {
-        Serve(Asset(versions: VersionsWith19));
+        Serve(Asset(versions: VersionsWith20));
 
         var table = await Source().GetTableAsync(Ct);
 
-        Assert.Contains(table.Majors, m => m.Major == 19);
+        Assert.Contains(table.Majors, m => m.Major == 20);
     }
 
     [Theory]
     // Dated far ahead (would pin itself forever), no supported LTS (latest-lts would exit 2), a bundled major dropped.
-    [InlineData("""{ "checked": "9999-12-31", "majors": [ { "major": 13, "lts": true, "eol": "2026-12-14", "tfm": "net8.0" }, { "major": 14, "lts": false, "eol": "2025-05-30", "tfm": "net8.0" }, { "major": 15, "lts": false, "eol": "2025-11-14", "tfm": "net9.0" }, { "major": 16, "lts": false, "eol": "2026-06-12", "tfm": "net9.0" }, { "major": 17, "lts": true, "eol": "2028-11-27", "tfm": "net10.0" }, { "major": 18, "lts": false, "eol": "2027-06-25", "tfm": "net10.0" }, { "major": 19, "lts": false, "eol": "2028-12-01", "tfm": "net11.0" } ] }""")]
-    [InlineData("""{ "checked": "2026-12-01", "majors": [ { "major": 13, "lts": false, "eol": "2026-12-14", "tfm": "net8.0" }, { "major": 14, "lts": false, "eol": "2025-05-30", "tfm": "net8.0" }, { "major": 15, "lts": false, "eol": "2025-11-14", "tfm": "net9.0" }, { "major": 16, "lts": false, "eol": "2026-06-12", "tfm": "net9.0" }, { "major": 17, "lts": false, "eol": "2028-11-27", "tfm": "net10.0" }, { "major": 18, "lts": false, "eol": "2027-06-25", "tfm": "net10.0" }, { "major": 19, "lts": false, "eol": "2028-12-01", "tfm": "net11.0" } ] }""")]
-    [InlineData("""{ "checked": "2026-12-01", "majors": [ { "major": 17, "lts": true, "eol": "2028-11-27", "tfm": "net10.0" }, { "major": 19, "lts": false, "eol": "2028-12-01", "tfm": "net11.0" } ] }""")]
+    [InlineData("""{ "checked": "9999-12-31", "majors": [ { "major": 13, "lts": true, "eol": "2026-12-14", "tfm": "net8.0" }, { "major": 14, "lts": false, "eol": "2025-05-30", "tfm": "net8.0" }, { "major": 15, "lts": false, "eol": "2025-11-14", "tfm": "net9.0" }, { "major": 16, "lts": false, "eol": "2026-06-12", "tfm": "net9.0" }, { "major": 17, "lts": true, "eol": "2028-11-27", "tfm": "net10.0" }, { "major": 18, "lts": false, "eol": "2027-06-25", "tfm": "net10.0" }, { "major": 19, "lts": false, "eol": null, "tfm": "net11.0" }, { "major": 20, "lts": false, "eol": "2028-12-01", "tfm": "net11.0" } ] }""")]
+    [InlineData("""{ "checked": "2026-12-01", "majors": [ { "major": 13, "lts": false, "eol": "2026-12-14", "tfm": "net8.0" }, { "major": 14, "lts": false, "eol": "2025-05-30", "tfm": "net8.0" }, { "major": 15, "lts": false, "eol": "2025-11-14", "tfm": "net9.0" }, { "major": 16, "lts": false, "eol": "2026-06-12", "tfm": "net9.0" }, { "major": 17, "lts": false, "eol": "2028-11-27", "tfm": "net10.0" }, { "major": 18, "lts": false, "eol": "2027-06-25", "tfm": "net10.0" }, { "major": 19, "lts": false, "eol": null, "tfm": "net11.0" }, { "major": 20, "lts": false, "eol": "2028-12-01", "tfm": "net11.0" } ] }""")]
+    [InlineData("""{ "checked": "2026-12-01", "majors": [ { "major": 17, "lts": true, "eol": "2028-11-27", "tfm": "net10.0" }, { "major": 20, "lts": false, "eol": "2028-12-01", "tfm": "net11.0" } ] }""")]
     public async Task ImplausibleVersionsTable_KeepsEmbedded(string versions)
     {
         // Security review M1: the release is only hash-checked against itself, so its table must also look sane.
@@ -199,7 +200,7 @@ public sealed class CommunityOverrideSourceTests : IDisposable
 
         var table = await Source().GetTableAsync(Ct);
 
-        Assert.DoesNotContain(table.Majors, m => m.Major == 19);
+        Assert.DoesNotContain(table.Majors, m => m.Major == 20);
         Assert.Contains(table.Majors, m => m.Major == 13);
     }
 
@@ -217,7 +218,7 @@ public sealed class CommunityOverrideSourceTests : IDisposable
     [Fact]
     public async Task OverridesAndTable_ShareOneFetch()
     {
-        Serve(Asset(versions: VersionsWith19));
+        Serve(Asset(versions: VersionsWith20));
         var source = Source();
 
         await source.GetTableAsync(Ct);

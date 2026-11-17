@@ -99,12 +99,38 @@ public class InspectionHeuristicsTests
         Assert.Equal("no lib for net10.0 (has net8.0)", e.Detail);
     }
 
-    [Fact]
-    public void H06_MatchingLib_IsInfo()
+    [Theory]
+    [InlineData("net10.0")] // the target's own TFM
+    [InlineData("net9.0")] // one release behind: the floor
+    [InlineData("netstandard2.0")] // NuGet rules, no floor
+    public void H06_FittingLib_IsInfo(string lib)
     {
-        var e = Assert.Single(Run(new H06TfmFit(), Facts(Ins(tfms: ["net9.0", "net10.0"]))));
+        var e = Assert.Single(Run(new H06TfmFit(), Facts(Ins(tfms: [lib]))));
         Assert.Equal(EvidenceResult.Info, e.Result);
     }
+
+    [Theory]
+    [InlineData("net8.0", "net6.0")] // Umbraco 13 target: two releases behind
+    [InlineData("net10.0", "netcoreapp3.1")]
+    [InlineData("net10.0", "net5.0")]
+    public void H06_LibBelowTheFloor_IsNotFit(string targetTfm, string lib)
+    {
+        var e = Assert.Single(new H06TfmFit().Evaluate(Facts(Ins(tfms: [lib])), Target("17.7.2", targetTfm)));
+        Assert.Equal(EvidenceResult.Negative, e.Result);
+    }
+
+    private static List<Evidence> RunNet11(string lib) =>
+        new H06TfmFit().Evaluate(Facts(Ins(tfms: [lib])), Target("19.0.0", "net11.0")).ToList();
+
+    [Fact] public void H06_Net10LibOnTargetNet11_IsFit() => Assert.Equal(EvidenceResult.Info, Assert.Single(RunNet11("net10.0")).Result);
+    [Fact] public void H06_NetStandard20OnTargetNet11_IsFit() => Assert.Equal(EvidenceResult.Info, Assert.Single(RunNet11("netstandard2.0")).Result);
+    [Fact] public void H06_Net9LibOnTargetNet11_IsNotFit() => Assert.Equal(EvidenceResult.Negative, Assert.Single(RunNet11("net9.0")).Result);
+    [Fact] public void H06_Net11LibOnTargetNet10_IsNotFit() =>
+        Assert.Equal(EvidenceResult.Negative, Assert.Single(Run(new H06TfmFit(), Facts(Ins(tfms: ["net11.0"])))).Result);
+
+    [Fact]
+    public void H06_Net7LibOnTargetNet8_IsFit() => // one release behind, the floor on the Umbraco 13 line
+        Assert.Equal(EvidenceResult.Info, Assert.Single(new H06TfmFit().Evaluate(Facts(Ins(tfms: ["net7.0"])), Target("13.9.0", "net8.0"))).Result);
 
     [Fact]
     public void H06_WithoutInspection_UsesDependencyGroups()

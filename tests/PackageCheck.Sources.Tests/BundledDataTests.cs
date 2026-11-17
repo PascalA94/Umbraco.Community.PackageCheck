@@ -7,11 +7,19 @@ namespace PackageCheck.Sources.Tests;
 public class BundledDataTests
 {
     [Fact]
-    public async Task UmbracoVersions_HoldsMajors13To18()
+    public async Task UmbracoVersions_HoldsMajors13To19()
     {
         var table = await new BundledUmbracoVersionsSource().GetTableAsync(CancellationToken.None);
-        Assert.Equal(Enumerable.Range(13, 6), table.Majors.Select(m => m.Major));
+        Assert.Equal(Enumerable.Range(13, 7), table.Majors.Select(m => m.Major));
         Assert.All(table.Majors, m => Assert.NotEqual(NuGetFramework.UnsupportedFramework, NuGetFramework.Parse(m.Tfm)));
+    }
+
+    [Fact]
+    public async Task UmbracoVersions_Row19_IsUnreleased()
+    {
+        var table = await new BundledUmbracoVersionsSource().GetTableAsync(CancellationToken.None);
+        var row = table.Find(19)!;
+        Assert.Equal(("net11.0", false, null, null), (row.Tfm, row.Lts, row.Eol, row.Released));
     }
 
     [Fact]

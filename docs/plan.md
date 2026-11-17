@@ -100,9 +100,9 @@ These are inputs the spec implies but no acceptance criterion names. Each line h
 UmbracoPackageCheck.slnx
 Directory.Build.props            net8.0, Nullable, TreatWarningsAsErrors, Deterministic, SourceLink, LangVersion latest
 Directory.Packages.props         central package versions
-global.json                      SDK 10.0.x, rollForward latestFeature
+global.json                      SDK 10.0.x, rollForward latestMajor
 data/overrides.seed.json         seed overrides (astroboard), embedded as the bundled snapshot
-data/umbraco-versions.json       majors 13-18: lts, eol, tfm
+data/umbraco-versions.json       majors 13-19: lts, eol, tfm
 schema/report.schema.json        JSON Schema for schemaVersion 1, embedded and published
 docs/design.md  docs/plan.md  docs/spikes.md  docs/decisions.md  docs/truth-table-changes.md
 spikes/                          M0 throwaway console apps, not in the solution
@@ -586,10 +586,10 @@ public async Task MixedFeeds_Matrix(string feedA, string feedB, string expected)
 **Interfaces:**
 - Consumes: `UsageException` (Task 8).
 - Produces: `record TargetVersion(string Requested, NuGetVersion Resolved, NuGetFramework Tfm, bool Prerelease) { NuGetVersion RangeVersion => Prerelease ? new NuGetVersion(Resolved.Major, Resolved.Minor, Resolved.Patch) : Resolved; }`. Every range check (H01, H02, H03, H19, the upgrade walk) uses `RangeVersion` (design 6.1, Pascal 2026-10-30: `18.0.0-rc2` counts as `18.0.0`).
-- Produces: `record UmbracoMajor(int Major, bool Lts, DateOnly Eol, string Tfm)`; `UmbracoVersionsTable(IReadOnlyList<UmbracoMajor>)` with `int LatestLtsMajor(DateOnly today)` and `NuGetFramework? FallbackTfm(int major)`.
+- Produces: `record UmbracoMajor(int Major, bool Lts, DateOnly? Eol, string Tfm, DateOnly? Released = null)`; `UmbracoVersionsTable(IReadOnlyList<UmbracoMajor>)` with `int LatestLtsMajor(DateOnly today)` and `NuGetFramework? FallbackTfm(int major)`.
 - Produces: `TargetResolver(IPackageMetadataSource source, UmbracoVersionsTable table)`, `Task<TargetVersion> ResolveAsync(string requested, NuGetVersion? siteVersion, bool allowPrerelease, CancellationToken ct)`; throws `UsageException` (exit 2) with the messages below.
 
-`umbraco-versions.json` holds majors 13 to 18 with `lts`, `eol` and `tfm`. Fill values from Umbraco's release calendar at the time of writing and tag the commit message with the date checked.
+`umbraco-versions.json` holds majors 13 to 19 with `lts`, `eol` and `tfm`. Fill values from Umbraco's release calendar at the time of writing and tag the commit message with the date checked.
 
 - [ ] **Step 1: Write the failing tests** (Umbraco.Cms versions served by a fake source)
 

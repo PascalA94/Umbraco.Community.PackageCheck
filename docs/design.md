@@ -95,7 +95,7 @@
 ## 4. Constraints
 
 ### Versions
-- **The CLI scans** projects on Umbraco 13 to 18+ and targets any major. No major is hard-coded.
+- **The CLI scans** projects on Umbraco 13 to 19+ and targets any major. No major is hard-coded.
 - **CLI runtime:** `net8.0` with `RollForward=Major`, so it runs on the 8, 9 and 10 SDKs. Umbraco17Check does the same [verified].
 - **Phase 3 backoffice package:** one build for v17 and v18, `Umbraco.Cms` range `[17.0.0, 19.0.0)`, per the portfolio rule. Split into two lines only if a spike proves the APIs force it.
 - Re-check v19 (around Q4 2026 [unverified]) when it lands.
@@ -491,7 +491,7 @@ Each check adds weighted evidence. The verdict comes from combining them, never 
 | 6 | allows, open | no | yes | `ok` | high |
 | 7 | allows, bounded | no | no / n/a | `ok` | medium |
 | 8 | allows, open from 14+ | no | no / n/a | `ok` | low |
-| 9 | allows, open from below 14, target 14+ (H03) | no | no / n/a | `suspicious` if H06 also fails (no target-major TFM), else `ok` | low |
+| 9 | allows, open from below 14, target 14+ (H03) | no | no / n/a | `suspicious` if H06 also fails (no fitting TFM: compatible and at most one .NET release behind), else `ok` | low |
 | 10 | no `Umbraco.Cms` path (H04) | n/a | n/a | `not-umbraco` | n/a |
 
 - H11, H12, H15, H17 and H18 only add evidence lines. They never change the verdict.
@@ -618,7 +618,7 @@ entries:
 
 **Mapping to verdicts (architect's call):** `works` → `ok` high; `broken` → `no-release` if no other version clears, else `upgrade`; `partial` → `suspicious` with the summary. Always labelled.
 
-**Before the repo exists (architect's call):** the builder writes a seed `data/overrides.seed.json` and `data/umbraco-versions.json` in the tool repo during M2. They hold astroboard plus the Umbraco majors 13 to 18. `latest-lts` and the offline tests use them from M2 on. In M5 the seed moves to `umbraco-package-compat` and the tool switches to the release asset, keeping the seed as the bundled snapshot.
+**Before the repo exists (architect's call):** the builder writes a seed `data/overrides.seed.json` and `data/umbraco-versions.json` in the tool repo during M2. They hold astroboard plus the Umbraco majors 13 to 19. `latest-lts` and the offline tests use them from M2 on. In M5 the seed moves to `umbraco-package-compat` and the tool switches to the release asset, keeping the seed as the bundled snapshot.
 
 **Release asset:** `overrides.json` (all files compiled, plus `umbraco-versions.json` embedded) and `overrides.json.sha256`. The tool fetches the latest release, checks the hash, caches 24h. Each tool release bundles a snapshot for offline use.
 
